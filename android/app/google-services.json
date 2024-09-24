@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "373920985117",
+    "project_id": "ethernode-otter",
+    "storage_bucket": "ethernode-otter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:373920985117:android:56463c198fff1bcfbd16f4",
+        "android_client_info": {
+          "package_name": "in.ethernode.otter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1DarJJUuWIK584wq5tZ9tEcRwQ-EaGiY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

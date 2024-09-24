@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:otter/ui/widgets/Login%20Elements/divider_text.dart';
 import 'package:otter/ui/widgets/Login%20Elements/login_form.dart';
 import 'package:otter/ui/widgets/Login%20Elements/oauth_widget.dart';
+import 'package:otter/ui/widgets/Login%20Elements/signup.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -63,7 +64,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           dividerWithText("Or", context),
                           const SizedBox(height: 20),
                           const OAuth(),
-                          const SizedBox(height: 80)
+                          const SizedBox(height: 40),
+                          signUp()
                         ],
                       ),
                     ),

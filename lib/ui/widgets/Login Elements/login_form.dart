@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginForm extends StatefulWidget {
@@ -14,6 +15,11 @@ class _LoginFormState extends State<LoginForm> {
   bool _isPasswordVisible = false;
 
   bool isRememberMeChecked = false;
+
+  void loginUser() async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text, password: passwordController.text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +73,36 @@ class _LoginFormState extends State<LoginForm> {
         return null;
       },
       keyboardType: TextInputType.emailAddress,
+    );
+  }
+
+  Widget loginButton(BuildContext context, GlobalKey<FormState> formKey) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(colors: [
+            Colors.blueAccent.shade700,
+            Colors.blueAccent.shade400
+          ])),
+      child: MaterialButton(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        onPressed: () {
+          if (formKey.currentState!.validate()) {
+            loginUser();
+          }
+        },
+        child: const Text(
+          'LOGIN',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
+        ),
+      ),
     );
   }
 
@@ -153,35 +189,5 @@ Widget rememberMeAndForgotPassword(
         ),
       ),
     ],
-  );
-}
-
-Widget loginButton(BuildContext context, GlobalKey<FormState> formKey) {
-  return Container(
-    width: MediaQuery.of(context).size.width,
-    decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        gradient: LinearGradient(
-            colors: [Colors.blueAccent.shade700, Colors.blueAccent.shade400])),
-    child: MaterialButton(
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      onPressed: () {
-        if (formKey.currentState!.validate()) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Login Successful')),
-          );
-        }
-      },
-      child: const Text(
-        'LOGIN',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.2,
-        ),
-      ),
-    ),
   );
 }
