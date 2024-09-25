@@ -65,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 20),
                           const OAuth(),
                           const SizedBox(height: 40),
-                          signUp(context)
+                          signupText(context)
                         ],
                       ),
                     ),

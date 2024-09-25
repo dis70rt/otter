@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:otter/services/login_services.dart';
 
+import '../../../main.dart';
+
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
 
@@ -11,13 +13,15 @@ class SignUpForm extends StatefulWidget {
 class _SignUpFormState extends State<SignUpForm> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-  bool isRememberMeChecked = false;
+
+  String? _emailError;
+  String? _passwordError;
+  String? _confirmPasswordError;
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +40,42 @@ class _SignUpFormState extends State<SignUpForm> {
             const SizedBox(height: 15),
             confirmPasswordField(),
             const SizedBox(height: 25),
-            loginButton(context, _formKey),
+            signUpButton(context),
           ],
         ),
       ),
     );
+  }
+
+  void submit() async {
+    if (_formKey.currentState!.validate()) {
+      String? signUpError = await userSignUp(
+        emailController.text,
+        passwordController.text,
+      );
+
+      if (signUpError != null) {
+        setState(() {
+          _emailError = null;
+          _passwordError = null;
+          _confirmPasswordError = null;
+
+          if (signUpError.contains('email')) {
+            _emailError = signUpError;
+          } else {
+            _passwordError = signUpError;
+          }
+        });
+      } else {
+        setState(() {
+          _emailError = null;
+          _passwordError = null;
+          _confirmPasswordError = null;
+        });
+
+        navigatorKey.currentState!.popUntil((route) => route.isFirst);
+      }
+    }
   }
 
   Widget emailField() {
@@ -49,16 +84,15 @@ class _SignUpFormState extends State<SignUpForm> {
       cursorColor: Colors.blueAccent,
       decoration: InputDecoration(
         labelText: "Email",
-        labelStyle:
-            const TextStyle(fontWeight: FontWeight.w300, color: Colors.white38),
+        labelStyle: const TextStyle(fontWeight: FontWeight.w300, color: Colors.white38),
         prefixIcon: const Icon(Icons.email_outlined),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(5)),
+        errorText: _emailError,
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Please enter your email';
-        } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-            .hasMatch(value)) {
+        } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
           return 'Enter a valid email';
         }
         return null;
@@ -74,15 +108,12 @@ class _SignUpFormState extends State<SignUpForm> {
       obscureText: !_isPasswordVisible,
       decoration: InputDecoration(
         labelText: "Password",
-        labelStyle:
-            const TextStyle(fontWeight: FontWeight.w300, color: Colors.white38),
+        labelStyle: const TextStyle(fontWeight: FontWeight.w300, color: Colors.white38),
         prefixIcon: const Icon(Icons.lock_outline),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         suffixIcon: IconButton(
           icon: Icon(
-            _isPasswordVisible
-                ? Icons.visibility_outlined
-                : Icons.visibility_off_outlined,
+            _isPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
             color: Colors.white54,
           ),
           onPressed: () {
@@ -91,6 +122,7 @@ class _SignUpFormState extends State<SignUpForm> {
             });
           },
         ),
+        errorText: _passwordError,
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -116,15 +148,12 @@ class _SignUpFormState extends State<SignUpForm> {
       obscureText: !_isConfirmPasswordVisible,
       decoration: InputDecoration(
         labelText: "Re-enter Password",
-        labelStyle:
-            const TextStyle(fontWeight: FontWeight.w300, color: Colors.white38),
+        labelStyle: const TextStyle(fontWeight: FontWeight.w300, color: Colors.white38),
         prefixIcon: const Icon(Icons.lock_outline),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         suffixIcon: IconButton(
           icon: Icon(
-            _isConfirmPasswordVisible
-                ? Icons.visibility_outlined
-                : Icons.visibility_off_outlined,
+            _isConfirmPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
             color: Colors.white54,
           ),
           onPressed: () {
@@ -133,6 +162,7 @@ class _SignUpFormState extends State<SignUpForm> {
             });
           },
         ),
+        errorText: _confirmPasswordError,
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -145,23 +175,19 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  Widget loginButton(BuildContext context, GlobalKey<FormState> formKey) {
+  Widget signUpButton(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           gradient: LinearGradient(colors: [
             Colors.blueAccent.shade700,
-            Colors.blueAccent.shade400
+            Colors.blueAccent.shade400,
           ])),
       child: MaterialButton(
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
-        onPressed: () {
-          if (formKey.currentState!.validate()) {
-            userLogin(emailController, passwordController, context);
-          }
-        },
+        onPressed: () => submit(),
         child: const Text(
           'SIGN UP',
           style: TextStyle(

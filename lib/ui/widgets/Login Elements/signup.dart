@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget signUp(BuildContext context) {
+Widget signupText(BuildContext context) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
@@ -18,7 +18,7 @@ Widget signUp(BuildContext context) {
   );
 }
 
-Widget login(BuildContext context) {
+Widget loginText(BuildContext context) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [

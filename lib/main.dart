@@ -6,6 +6,7 @@ import 'package:otter/ui/screens/auth_page.dart';
 import 'package:otter/ui/screens/home_screen.dart';
 import 'package:otter/ui/screens/login_screen.dart';
 import 'package:otter/ui/screens/signup_screen.dart';
+import 'package:otter/utils/snackbar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scaffoldMessengerKey: Snackbar.messengerKey,
       navigatorKey: navigatorKey,
       theme: AppTheme.dark,
       routes: {
