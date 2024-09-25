@@ -28,8 +28,6 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       theme: AppTheme.dark,
       routes: {
-        "/login": (context) => const LoginScreen(),
-        "/signup": (context) => const SignUpScreen(),
         "/home": (context) => const HomeScreen()
       },
       home: const AuthPage(),

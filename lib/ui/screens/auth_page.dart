@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:otter/ui/screens/auth_screen.dart';
 import 'package:otter/ui/screens/home_screen.dart';
 import 'package:otter/ui/screens/login_screen.dart';
 
@@ -19,7 +20,7 @@ class AuthPage extends StatelessWidget {
           return Center(child: Text("Error: ${snapshot.error}"));
         }
 
-        return snapshot.hasData ? const HomeScreen() : const LoginScreen();
+        return snapshot.hasData ? const HomeScreen() : const AuthScreen();
       },
     );
   }
