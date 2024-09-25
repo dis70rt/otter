@@ -37,11 +37,13 @@ void userLogout() {
   FirebaseAuth.instance.signOut();
 }
 
-Future<String?> userSignUp(String email, String password) async {
+Future<String?> userSignUp(
+    String email, String password, VoidCallback toggle) async {
   try {
     await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email.trim(), password: password.trim());
-    return null; // Account created successfully
+    toggle();
+    return null;
   } on FirebaseAuthException catch (e) {
     log(e.toString());
 
@@ -60,4 +62,3 @@ Future<String?> userSignUp(String email, String password) async {
     return "An unknown error occurred. Please try again.";
   }
 }
-

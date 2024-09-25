@@ -30,6 +30,7 @@ class LoginScreen extends StatelessWidget {
           const OAuth(),
           const SizedBox(height: 40),
           signupText(context, onClickedSignUp),
+          const SizedBox(height: 20)
         ],
       ),
     );

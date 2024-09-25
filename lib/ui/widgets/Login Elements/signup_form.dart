@@ -4,7 +4,8 @@ import 'package:otter/services/login_services.dart';
 import '../../../main.dart';
 
 class SignUpForm extends StatefulWidget {
-  const SignUpForm({super.key});
+  final VoidCallback onSignUp;
+  const SignUpForm({super.key, required this.onSignUp});
 
   @override
   State<SignUpForm> createState() => _SignUpFormState();
@@ -52,6 +53,7 @@ class _SignUpFormState extends State<SignUpForm> {
       String? signUpError = await userSignUp(
         emailController.text,
         passwordController.text,
+        widget.onSignUp
       );
 
       if (signUpError != null) {

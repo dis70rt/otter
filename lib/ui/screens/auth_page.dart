@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:otter/ui/screens/auth_screen.dart';
 import 'package:otter/ui/screens/home_screen.dart';
 import 'package:otter/ui/screens/login_screen.dart';
+import 'package:otter/ui/widgets/verify_email.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
@@ -20,7 +21,7 @@ class AuthPage extends StatelessWidget {
           return Center(child: Text("Error: ${snapshot.error}"));
         }
 
-        return snapshot.hasData ? const HomeScreen() : const AuthScreen();
+        return snapshot.hasData ? const VerifyEmail() : const AuthScreen();
       },
     );
   }
