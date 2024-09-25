@@ -60,20 +60,17 @@ class _LoginFormState extends State<LoginForm> {
       );
 
       if (loginError != null) {
-        // Assuming the error is due to invalid login credentials
         setState(() {
-          _emailError = null; // Reset email error
-          _passwordError = null; // Reset password error
+          _emailError = null;
+          _passwordError = null;
 
-          // You can handle different types of errors here
           if (loginError.contains('email')) {
-            _emailError = loginError; // Set error for email
+            _emailError = loginError;
           } else {
-            _passwordError = loginError; // Set error for password
+            _passwordError = loginError;
           }
         });
       } else {
-        // Reset errors on successful login
         setState(() {
           _emailError = null;
           _passwordError = null;
@@ -90,15 +87,17 @@ class _LoginFormState extends State<LoginForm> {
       cursorColor: Colors.blueAccent,
       decoration: InputDecoration(
         labelText: "Email",
-        labelStyle: const TextStyle(fontWeight: FontWeight.w300, color: Colors.white38),
+        labelStyle:
+            const TextStyle(fontWeight: FontWeight.w300, color: Colors.white38),
         prefixIcon: const Icon(Icons.email_outlined),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(5)),
-        errorText: _emailError, // Display email error here
+        errorText: _emailError,
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Please enter your email';
-        } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
+        } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+            .hasMatch(value)) {
           return 'Please enter a valid email';
         }
         return null;
@@ -140,7 +139,8 @@ class _LoginFormState extends State<LoginForm> {
       obscureText: !_isPasswordVisible,
       decoration: InputDecoration(
         labelText: "Password",
-        labelStyle: const TextStyle(fontWeight: FontWeight.w300, color: Colors.white38),
+        labelStyle:
+            const TextStyle(fontWeight: FontWeight.w300, color: Colors.white38),
         prefixIcon: const Icon(Icons.lock_outline),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         suffixIcon: IconButton(
@@ -156,7 +156,7 @@ class _LoginFormState extends State<LoginForm> {
             });
           },
         ),
-        errorText: _passwordError, // Display password error here
+        errorText: _passwordError,
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
