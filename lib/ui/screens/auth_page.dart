@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:otter/ui/screens/auth_screen.dart';
-import 'package:otter/ui/screens/home_screen.dart';
-import 'package:otter/ui/screens/login_screen.dart';
 import 'package:otter/ui/widgets/verify_email.dart';
 
 class AuthPage extends StatelessWidget {

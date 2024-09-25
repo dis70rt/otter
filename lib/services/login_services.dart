@@ -2,8 +2,6 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:otter/main.dart';
-import 'package:otter/utils/snackbar.dart';
 
 Future<String?> userLogin(String email, String password) async {
   try {

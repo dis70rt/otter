@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:otter/constants/theme.dart';
 import 'package:otter/firebase_options.dart';
 import 'package:otter/ui/screens/auth_page.dart';
-import 'package:otter/ui/screens/auth_screen.dart';
 import 'package:otter/ui/screens/home_screen.dart';
-import 'package:otter/ui/screens/login_screen.dart';
-import 'package:otter/ui/screens/signup_screen.dart';
-import 'package:otter/ui/widgets/verify_email.dart';
 import 'package:otter/utils/snackbar.dart';
 
 void main() async {

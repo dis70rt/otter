@@ -1,10 +1,12 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:otter/services/login_services.dart';
 
 import '../../../main.dart';
 
 class LoginForm extends StatefulWidget {
-  const LoginForm({super.key});
+  final VoidCallback onForgotPassword;
+  const LoginForm({super.key, required this.onForgotPassword});
 
   @override
   State<LoginForm> createState() => _LoginFormState();
@@ -42,7 +44,7 @@ class _LoginFormState extends State<LoginForm> {
                 setState(() {
                   isRememberMeChecked = value ?? false;
                 });
-              },
+              }, widget.onForgotPassword
             ),
             const SizedBox(height: 25),
             loginButton(context)
@@ -169,7 +171,7 @@ class _LoginFormState extends State<LoginForm> {
 }
 
 Widget rememberMeAndForgotPassword(
-    bool isRememberMeChecked, Function(bool?) onRememberMeChanged) {
+    bool isRememberMeChecked, Function(bool?) onRememberMeChanged, VoidCallback toggle) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -195,18 +197,17 @@ Widget rememberMeAndForgotPassword(
           ],
         ),
       ),
-      TextButton(
-        style: TextButton.styleFrom(
-            padding: EdgeInsets.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            splashFactory: NoSplash.splashFactory,
-            overlayColor: Colors.transparent),
-        onPressed: () {},
-        child: const Text(
-          "Forgot Password?",
-          style: TextStyle(color: Colors.white54),
-        ),
-      ),
+
+      RichText(
+          text: TextSpan(children: [
+        TextSpan(
+          text: "Forgot Password?",
+          style:
+              const TextStyle(color: Colors.white54, fontWeight: FontWeight.normal),
+          recognizer: TapGestureRecognizer()
+            ..onTap = toggle, // Attach the toggle function
+        )
+      ])),
     ],
   );
 }

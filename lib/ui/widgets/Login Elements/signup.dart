@@ -46,3 +46,27 @@ Widget loginText(BuildContext context, VoidCallback toggle) {
     ],
   );
 }
+
+
+Widget forgotText(BuildContext context, VoidCallback toggle) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      RichText(
+        text: TextSpan(
+          children: [
+            const TextSpan(
+              text: "Remembered your Password? ",
+              style: TextStyle(color: Colors.white54, fontWeight: FontWeight.bold),
+            ),
+            TextSpan(
+              text: "Log In",
+              style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              recognizer: TapGestureRecognizer()..onTap = toggle, // Attach the toggle function
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
