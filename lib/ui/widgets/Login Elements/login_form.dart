@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:otter/services/login_services.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -12,14 +12,9 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   bool _isPasswordVisible = false;
-
   bool isRememberMeChecked = false;
-
-  void loginUser() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text, password: passwordController.text);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +85,7 @@ class _LoginFormState extends State<LoginForm> {
         highlightColor: Colors.transparent,
         onPressed: () {
           if (formKey.currentState!.validate()) {
-            loginUser();
+            userLogin(emailController, passwordController, context);
           }
         },
         child: const Text(

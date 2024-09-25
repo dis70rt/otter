@@ -3,18 +3,18 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:otter/ui/widgets/Login%20Elements/divider_text.dart';
-import 'package:otter/ui/widgets/Login%20Elements/login_form.dart';
 import 'package:otter/ui/widgets/Login%20Elements/oauth_widget.dart';
 import 'package:otter/ui/widgets/Login%20Elements/signup.dart';
+import 'package:otter/ui/widgets/SignUp%20Elements/signup_form.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,21 +51,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const SizedBox(height: 10),
-                          const Center(
-                            child: Text(
-                              "Enter your login information",
-                              style: TextStyle(color: Colors.white54),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          const LoginForm(),
+                          const SignUpForm(),
                           const SizedBox(height: 30),
                           dividerWithText("Or", context),
                           const SizedBox(height: 20),
                           const OAuth(),
                           const SizedBox(height: 40),
-                          signUp(context)
+                          login(context)
                         ],
                       ),
                     ),
