@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class AuthWidget extends StatelessWidget {
+  final bool? resizeToAvoidBottomInset;
   final Widget child;
 
-  const AuthWidget({super.key, required this.child});
+  const AuthWidget({super.key, required this.child, this.resizeToAvoidBottomInset});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset ?? false,
       body: Stack(
         children: [
           Positioned.fill(

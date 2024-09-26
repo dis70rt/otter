@@ -12,12 +12,12 @@ Future<String?> userLogin(String email, String password) async {
   try {
     await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email.trim(), password: password.trim());
-    // _hideDialog();
-    // _showSuccessDialog('Login Successful!');
+    _hideDialog();
+
     return null;
   } on FirebaseAuthException catch (e) {
     log(e.code);
-    // _hideDialog();
+    _hideDialog();
 
     String errorMessage;
     switch (e.code) {
@@ -42,7 +42,7 @@ Future<String?> userLogin(String email, String password) async {
     return errorMessage;
   } catch (e) {
     log(e.toString());
-    // _hideDialog();
+
     return "An unknown error occurred. Please try again.";
   }
 }
@@ -79,12 +79,10 @@ Future<String?> userSignUp(
       default:
         errorMessage = "An unknown error occurred. Please try again.";
     }
-    _showErrorDialog(errorMessage);
     return errorMessage;
   } catch (e) {
     log(e.toString());
     _hideDialog();
-    _showErrorDialog("An unknown error occurred. Please try again.");
     return "An unknown error occurred. Please try again.";
   }
 }
@@ -183,4 +181,20 @@ void _showSuccessDialog(String message) {
       ),
     ),
   );
+}
+
+Future<void> sendOTP(String phoneNumber) async {
+  try {
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      verificationCompleted: (PhoneAuthCredential credential) {},
+      verificationFailed: (FirebaseAuthException ex) {
+        throw Exception('Verification failed: ${ex.message}');
+      },
+      codeSent: (String verificationID, int? resendToken) {},
+      codeAutoRetrievalTimeout: (String verificationID) {},
+      phoneNumber: phoneNumber,
+    );
+  } catch (e) {
+    log('Error sending OTP: $e');
+  }
 }
