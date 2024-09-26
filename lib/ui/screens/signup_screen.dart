@@ -35,6 +35,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               loginText(context, widget.onClickedLogin),
               const SizedBox(height: 20)
             ],
-          ),
+          )
         );
 }

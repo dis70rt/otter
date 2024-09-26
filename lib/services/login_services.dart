@@ -1,62 +1,186 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+import '../main.dart';
 
 Future<String?> userLogin(String email, String password) async {
+  _showLoadingDialog();
   try {
     await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email.trim(), password: password.trim());
+    // _hideDialog();
+    // _showSuccessDialog('Login Successful!');
     return null;
   } on FirebaseAuthException catch (e) {
     log(e.code);
+    // _hideDialog();
 
+    String errorMessage;
     switch (e.code) {
       case 'invalid-email':
-        return "The email address is not valid.";
+        errorMessage = "The email address is not valid.";
+        break;
       case 'user-disabled':
-        return "This user has been disabled.";
+        errorMessage = "This user has been disabled.";
+        break;
       case 'user-not-found':
-        return "No user found with this email.";
+        errorMessage = "No user found with this email.";
+        break;
       case 'wrong-password':
-        return "The password is incorrect.";
+        errorMessage = "The password is incorrect.";
+        break;
       case 'invalid-credential':
-        return "The Username or Password is Incorrect.";
+        errorMessage = "The Username or Password is Incorrect.";
+        break;
       default:
-        return "An unknown error occurred. Please try again.";
+        errorMessage = "An unknown error occurred. Please try again.";
     }
+    return errorMessage;
   } catch (e) {
     log(e.toString());
+    // _hideDialog();
     return "An unknown error occurred. Please try again.";
   }
 }
 
-void userLogout() {
-  FirebaseAuth.instance.signOut();
+userLogout() async {
+  return FirebaseAuth.instance.signOut();
 }
 
 Future<String?> userSignUp(
     String email, String password, VoidCallback toggle) async {
+  _showLoadingDialog();
   try {
     await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email.trim(), password: password.trim());
+    _hideDialog();
+    _showSuccessDialog('Sign-Up Successful!');
     toggle();
     return null;
   } on FirebaseAuthException catch (e) {
     log(e.toString());
+    _hideDialog();
 
+    String errorMessage;
     switch (e.code) {
       case 'weak-password':
-        return "The password provided is too weak.";
+        errorMessage = "The password provided is too weak.";
+        break;
       case 'email-already-in-use':
-        return "This email is already in use by another account.";
+        errorMessage = "This email is already in use by another account.";
+        break;
       case 'invalid-email':
-        return "The email address is not valid.";
+        errorMessage = "The email address is not valid.";
+        break;
       default:
-        return "An unknown error occurred. Please try again.";
+        errorMessage = "An unknown error occurred. Please try again.";
     }
+    _showErrorDialog(errorMessage);
+    return errorMessage;
   } catch (e) {
     log(e.toString());
+    _hideDialog();
+    _showErrorDialog("An unknown error occurred. Please try again.");
     return "An unknown error occurred. Please try again.";
   }
+}
+
+Future<void> signInWithGoogle() async {
+  _showLoadingDialog();
+
+  try {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    if (googleUser == null) {
+      _hideDialog();
+      _showErrorDialog('Google Sign-In canceled by user.');
+      return;
+    }
+
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    final OAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    await FirebaseAuth.instance.signInWithCredential(credential);
+    _hideDialog();
+
+    _showSuccessDialog('Sign-in Successful!');
+  } catch (e) {
+    _hideDialog();
+    log('Error during Google sign-in: $e');
+    _showErrorDialog('Error during Google Sign-In.');
+  }
+}
+
+void _showLoadingDialog() {
+  navigatorKey.currentState?.push(
+    CupertinoPageRoute(
+      fullscreenDialog: true,
+      builder: (context) => const CupertinoAlertDialog(
+        title: Text('Signing In...'),
+        content: Padding(
+          padding: EdgeInsets.all(5),
+          child: Center(
+            child: SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                color: Colors.blueAccent,
+                strokeCap: StrokeCap.round,
+                strokeAlign: BorderSide.strokeAlignCenter,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void _hideDialog() {
+  navigatorKey.currentState?.pop();
+}
+
+void _showErrorDialog(String message) {
+  navigatorKey.currentState?.push(
+    CupertinoPageRoute(
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () => _hideDialog(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+void _showSuccessDialog(String message) {
+  navigatorKey.currentState?.push(
+    CupertinoPageRoute(
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('Success'),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () => _hideDialog(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    ),
+  );
 }

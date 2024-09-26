@@ -1,8 +1,9 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:otter/ui/screens/home_screen.dart';
+import 'package:otter/ui/screens/auth_page.dart';
 import 'package:otter/utils/snackbar.dart';
 
 import 'auth_widget.dart';
@@ -15,37 +16,23 @@ class VerifyEmail extends StatefulWidget {
 }
 
 class _VerifyEmailState extends State<VerifyEmail> {
-  bool isEmailVerified = false;
-  Timer? timer;
+  late Timer? timer;
 
   @override
   void initState() {
     super.initState();
-    checkEmailVerificationStatus();
-  }
-
-  Future<void> checkEmailVerificationStatus() async {
-    final user = FirebaseAuth.instance.currentUser!;
-    
-    if (!user.emailVerified) {
-      sendVerificationEmail();
-
-      // Start a periodic timer to check email verification status
-      timer = Timer.periodic(const Duration(seconds: 3), (_) async {
-        await user.reload();
-        setState(() {
-          isEmailVerified = user.emailVerified;
-        });
-
-        if (isEmailVerified) {
-          timer?.cancel();
-        }
-      });
-    } else {
-      setState(() {
-        isEmailVerified = true;
-      });
-    }
+    sendVerificationEmail();
+    timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      await FirebaseAuth.instance.currentUser?.reload();
+      bool isEmailVerified =
+          FirebaseAuth.instance.currentUser?.emailVerified ?? true;
+      log("Verified Email: $isEmailVerified");
+      if (isEmailVerified) {
+        timer.cancel();
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => const AuthPage()));
+      }
+    });
   }
 
   void sendVerificationEmail() async {
@@ -59,10 +46,6 @@ class _VerifyEmailState extends State<VerifyEmail> {
 
   @override
   Widget build(BuildContext context) {
-    if (isEmailVerified) {
-      return const HomeScreen();
-    }
-
     return AuthWidget(
       child: Column(
         children: [

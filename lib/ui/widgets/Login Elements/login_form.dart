@@ -205,7 +205,7 @@ Widget rememberMeAndForgotPassword(
           style:
               const TextStyle(color: Colors.white54, fontWeight: FontWeight.normal),
           recognizer: TapGestureRecognizer()
-            ..onTap = toggle, // Attach the toggle function
+            ..onTap = toggle,
         )
       ])),
     ],

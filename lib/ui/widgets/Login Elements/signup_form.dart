@@ -56,7 +56,7 @@ class _SignUpFormState extends State<SignUpForm> {
         widget.onSignUp
       );
 
-      if (signUpError != null) {
+      if (signUpError != null && mounted) {
         setState(() {
           _emailError = null;
           _passwordError = null;

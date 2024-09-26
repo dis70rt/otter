@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:otter/constants/images.dart';
+import 'package:otter/services/login_services.dart';
 
 class OAuth extends StatelessWidget {
   const OAuth({super.key});
@@ -9,64 +10,43 @@ class OAuth extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      // mainAxisSize: MainAxisSize.min,
-      children: [oauthGoogle(), oauthApple()],
+      children: [
+        oauthButton(Logo.google, "GOOGLE", signInWithGoogle),
+        const SizedBox(width: 20),
+        oauthButton(Logo.apple, "APPLE", () {}),
+      ],
     );
   }
-}
 
-Widget oauthGoogle() {
-  return Container(
-    width: 150,
-    padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-    decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white30, width: 0.6)),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SvgPicture.asset(
-          Logo.google,
-          width: 20,
-        ),
-        const SizedBox(width: 10),
-        const Text(
-          "GOOGLE",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        )
-      ],
-    ),
-  );
-}
-
-Widget oauthApple() {
-  return Center(
-    child: Container(
-      width: 150,
-      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-      decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white30, width: 0.6)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SvgPicture.asset(
-            Logo.apple,
-            width: 20,
+  Widget oauthButton(String logoPath, String label, Function()? onTap) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 150,
+          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.white30, width: 0.6),
           ),
-          const SizedBox(width: 10),
-          const Text(
-            "APPLE",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          )
-        ],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SvgPicture.asset(logoPath, width: 20),
+              const SizedBox(width: 10),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
