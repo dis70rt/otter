@@ -12,7 +12,20 @@
           "package_name": "in.ethernode.otter"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "373920985117-l9q1tj9188uc0tp8cs6hjgp20blgr4c1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.ethernode.otter",
+            "certificate_hash": "db8178146f130f26ed6fca1d4ce2e906df622520"
+          }
+        },
+        {
+          "client_id": "373920985117-a1dc415d6dbrspqehh6cmp1ujotppom5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD1DarJJUuWIK584wq5tZ9tEcRwQ-EaGiY"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "373920985117-a1dc415d6dbrspqehh6cmp1ujotppom5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "373920985117-f8mchq9et4gaulrp6mmm600rnm1kfg69.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "in.ethernode.otter"
+              }
+            }
+          ]
         }
       }
     }

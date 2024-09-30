@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:otter/constants/theme.dart';
 import 'package:otter/firebase_options.dart';
 import 'package:otter/ui/screens/add_phone.dart';
-import 'package:otter/ui/screens/auth_page.dart';
+import 'package:otter/ui/screens/auth_screen.dart';
 import 'package:otter/ui/screens/home_screen.dart';
-import 'package:otter/ui/screens/otp_screen.dart';
+import 'package:otter/ui/screens/login_screen.dart';
 import 'package:otter/utils/snackbar.dart';
 
 void main() async {
@@ -24,13 +24,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: Snackbar.messengerKey,
       navigatorKey: navigatorKey,
       theme: AppTheme.dark,
       routes: {
         "/home": (context) => const HomeScreen()
       },
-      home: const AddPhone()// const AuthPage(),
+      home: const AuthScreen()// const AuthPage(),
     );
   }
 }

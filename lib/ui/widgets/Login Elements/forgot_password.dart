@@ -19,6 +19,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   @override
   Widget build(BuildContext context) {
     return AuthWidget(
+      resizeToAvoidBottomInset: true,
         child: Form(
       key: _formKey,
       child: Column(

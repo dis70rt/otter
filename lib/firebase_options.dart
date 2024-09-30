@@ -70,6 +70,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '373920985117',
     projectId: 'ethernode-otter',
     storageBucket: 'ethernode-otter.appspot.com',
+    androidClientId: '373920985117-l9q1tj9188uc0tp8cs6hjgp20blgr4c1.apps.googleusercontent.com',
+    iosClientId: '373920985117-f8mchq9et4gaulrp6mmm600rnm1kfg69.apps.googleusercontent.com',
     iosBundleId: 'in.ethernode.otter',
   );
+
 }

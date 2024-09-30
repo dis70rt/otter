@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../main.dart';
+import '../ui/screens/otp_screen.dart';
 
 Future<String?> userLogin(String email, String password) async {
   _showLoadingDialog();
@@ -183,15 +184,31 @@ void _showSuccessDialog(String message) {
   );
 }
 
-Future<void> sendOTP(String phoneNumber) async {
+Future<void> sendOTP(String phoneNumber, BuildContext context) async {
   try {
+    log('Sending OTP to $phoneNumber');
     await FirebaseAuth.instance.verifyPhoneNumber(
-      verificationCompleted: (PhoneAuthCredential credential) {},
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        await FirebaseAuth.instance.signInWithCredential(credential);
+        log('Verification completed, signed in.');
+      },
       verificationFailed: (FirebaseAuthException ex) {
+        log('Verification failed: ${ex.message}');
         throw Exception('Verification failed: ${ex.message}');
       },
-      codeSent: (String verificationID, int? resendToken) {},
-      codeAutoRetrievalTimeout: (String verificationID) {},
+      codeSent: (String verificationID, int? resendToken) {
+        log('Code sent to $phoneNumber, verification ID: $verificationID');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OTPscreen(
+                verificationID: verificationID, phoneNumber: phoneNumber),
+          ),
+        );
+      },
+      codeAutoRetrievalTimeout: (String verificationID) {
+        log('Auto-retrieval timeout for verification ID: $verificationID');
+      },
       phoneNumber: phoneNumber,
     );
   } catch (e) {
