@@ -1,16 +1,5 @@
-# otter
+# OTTER: Data-Driven Financial Insights
 
-A new Flutter project.
+Otter provides a comprehensive Company Financial and Performance Record, capturing essential metrics about a company's financial health, market position, and growth potential. It enables detailed analysis and comparison of a wide range of financial and operational data.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+[Notion Blog](https://miniature-cent-78c.notion.site/OTTER-Data-Driven-Financial-Insights-10e18ce981d780f1b7affe7ad60ae9a4?pvs=74)
