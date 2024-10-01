@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_country_code_picker/fl_country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,8 +41,22 @@ class _AddPhoneState extends State<AddPhone> {
   final TextEditingController _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  bool phoneExist() {
+    String? ph = FirebaseAuth.instance.currentUser?.phoneNumber;
+    log(ph ?? "Empty Phone");
+    if (ph == null || ph.isEmpty) {
+      return false;
+    } else {
+      sendOTP(ph, context);
+      return true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if(phoneExist()) {
+      return const SizedBox();
+    }
     return AuthWidget(
       resizeToAvoidBottomInset: false,
       child: Form(
@@ -119,9 +134,7 @@ class _AddPhoneState extends State<AddPhone> {
                 if (_formKey.currentState!.validate()) {
                   String phoneNumber =
                       "${selectedCountryCode?.dialCode ?? "+91"}${_phoneController.text.trim()}";
-
                   sendOTP(phoneNumber, context);
-                  
                 }
               }, width: MediaQuery.of(context).size.width),
             ),

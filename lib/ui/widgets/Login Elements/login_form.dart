@@ -59,6 +59,7 @@ class _LoginFormState extends State<LoginForm> {
       String? loginError = await userLogin(
         emailController.text,
         passwordController.text,
+        context
       );
 
       if (loginError != null) {

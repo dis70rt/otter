@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:otter/ui/screens/auth_page.dart';
+import 'package:otter/ui/screens/add_phone.dart';
 import 'package:otter/utils/snackbar.dart';
 
 import 'auth_widget.dart';
@@ -30,7 +30,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
       if (isEmailVerified) {
         timer.cancel();
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (_) => const AuthPage()));
+            context, MaterialPageRoute(builder: (_) => const AddPhone()));
       }
     });
   }

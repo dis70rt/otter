@@ -6,15 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../main.dart';
+import '../ui/screens/add_phone.dart';
 import '../ui/screens/otp_screen.dart';
 
-Future<String?> userLogin(String email, String password) async {
+Future<String?> userLogin(String email, String password, BuildContext context) async {
   _showLoadingDialog();
   try {
     await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email.trim(), password: password.trim());
     _hideDialog();
-
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const AddPhone()));
     return null;
   } on FirebaseAuthException catch (e) {
     log(e.code);
