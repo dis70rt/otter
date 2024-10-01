@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:otter/ui/widgets/auth_widget.dart';
 import 'package:otter/ui/widgets/otp_buttons.dart';
+
+import '../../services/auth_provider.dart';
 
 class OTPscreen extends StatefulWidget {
   final String verificationID;
@@ -21,6 +23,7 @@ class OTPscreen extends StatefulWidget {
 }
 
 class _OTPscreenState extends State<OTPscreen> {
+  final AuthProvider authProvider = AuthProvider();
   final List<TextEditingController> otpControllers =
       List.generate(6, (_) => TextEditingController());
   late Timer _timer;
@@ -69,43 +72,55 @@ class _OTPscreenState extends State<OTPscreen> {
     }
   }
 
- Future<void> verifyOTP() async {
-  if (_isLoading) return;
-  setState(() {
-    _isLoading = true;
-    _errorMessage = null;
-  });
-
-  String otp = otpControllers.map((ctrl) => ctrl.text).join();
-  if (otp.length != 6) {
+  Future<void> verifyOTP() async {
+    if (_isLoading) return;
     setState(() {
-      _isLoading = false;
-      _errorMessage = "Please enter the complete OTP.";
+      _isLoading = true;
+      _errorMessage = null;
     });
-    return;
-  }
 
-  try {
-    final authCredential = PhoneAuthProvider.credential(
-      verificationId: widget.verificationID,
-      smsCode: otp,
-    );
+    String otp = otpControllers.map((ctrl) => ctrl.text).join();
+    if (otp.length != 6) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = "Please enter the complete OTP.";
+      });
+      return;
+    }
 
     try {
-      await FirebaseAuth.instance.currentUser?.linkWithCredential(authCredential);
-    } catch (e) {
-      log(e.toString());
-    }
-    Navigator.popAndPushNamed(context, "/home");
-  } catch (e) {
-    log("CHECK ERROR >> ${e.toString()}");
-    setState(() {
-      _isLoading = false;
-      _errorMessage = "Invalid OTP. Please try again.";
-    });
-  }
-}
+      final authCredential = fbAuth.PhoneAuthProvider.credential(
+        verificationId: widget.verificationID,
+        smsCode: otp,
+      );
 
+      try {
+        await authProvider.user?.linkWithCredential(authCredential);
+      } on Exception catch (e) {
+        log("CHECK ERROR >> ${e.toString()}");
+      }
+      Navigator.popAndPushNamed(context, "/home");
+    } catch (e) {
+      log("CHECK ERROR >> ${e.toString()}");
+      setState(() {
+        _isLoading = false;
+        _errorMessage = "Invalid OTP. Please try again.";
+      });
+    }
+  }
+
+  void _onOtpFieldChanged(String value, int index) {
+    if (value.length == 1 && index < otpControllers.length - 1) {
+      FocusScope.of(context).nextFocus();
+    } else if (value.isEmpty && index > 0) {
+      FocusScope.of(context).previousFocus();
+    }
+
+    // Automatically verify if it's the last field
+    if (index == otpControllers.length - 1 && value.length == 1) {
+      verifyOTP();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +163,9 @@ class _OTPscreenState extends State<OTPscreen> {
               ),
               const SizedBox(width: 10),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  // Handle changing the phone number
+                },
                 child: const Text(
                   "Change phone number?",
                   style: TextStyle(color: Colors.blueAccent),
@@ -192,23 +209,21 @@ class _OTPscreenState extends State<OTPscreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(
-            6, (index) => _buildOtpTextField(otpControllers[index])),
+          6,
+          (index) => _buildOtpTextField(otpControllers[index], index),
+        ),
       ),
     );
   }
 
-  Widget _buildOtpTextField(TextEditingController controller) {
+  Widget _buildOtpTextField(TextEditingController controller, int index) {
     return SizedBox(
       height: 54,
       width: 50,
       child: TextFormField(
         controller: controller,
         cursorColor: Colors.blueAccent,
-        onChanged: (value) {
-          if (value.length == 1) {
-            FocusScope.of(context).nextFocus();
-          }
-        },
+        onChanged: (value) => _onOtpFieldChanged(value, index),
         decoration: InputDecoration(
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),

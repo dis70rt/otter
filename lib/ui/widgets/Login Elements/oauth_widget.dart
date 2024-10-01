@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:otter/constants/images.dart';
-import 'package:otter/services/login_services.dart';
+import 'package:otter/services/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class OAuth extends StatelessWidget {
   const OAuth({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        oauthButton(Logo.google, "GOOGLE", signInWithGoogle),
-        const SizedBox(width: 20),
-        oauthButton(Logo.apple, "APPLE", () {}),
-      ],
+    return Consumer<AuthProvider>(
+      builder: (context, auth, child) => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          oauthButton(Logo.google, "GOOGLE", auth.signInWithGoogle),
+          const SizedBox(width: 20),
+          oauthButton(Logo.apple, "APPLE", () {}),
+        ],
+      ),
     );
   }
 

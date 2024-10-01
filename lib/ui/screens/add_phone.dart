@@ -1,12 +1,9 @@
-import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_country_code_picker/fl_country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:otter/services/login_services.dart';
+import 'package:provider/provider.dart';
 import 'package:otter/ui/widgets/otp_buttons.dart';
-
+import '../../services/auth_provider.dart';
 import '../widgets/auth_widget.dart';
 
 class AddPhone extends StatefulWidget {
@@ -17,46 +14,43 @@ class AddPhone extends StatefulWidget {
 }
 
 class _AddPhoneState extends State<AddPhone> {
-  final countryPicker = FlCountryCodePicker(
-      title: const Padding(
-        padding: EdgeInsets.only(top: 8.0),
-        child: Center(
-            child: Text(
+  final FlCountryCodePicker countryPicker = FlCountryCodePicker(
+    title: const Padding(
+      padding: EdgeInsets.only(top: 8.0),
+      child: Center(
+        child: Text(
           "Select Country",
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        )),
+        ),
       ),
-      searchBarDecoration: InputDecoration(
-        border: OutlineInputBorder(
-            borderSide: BorderSide.none,
-            borderRadius: BorderRadius.circular(20)),
-        hintText: "India",
-        hintStyle: const TextStyle(color: Colors.white30),
-        suffixIcon: const Icon(Icons.search),
-        fillColor: const Color.fromRGBO(20, 20, 20, 1),
-        filled: true,
-      ));
+    ),
+    searchBarDecoration: InputDecoration(
+      border: OutlineInputBorder(
+        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      hintText: "India",
+      hintStyle: const TextStyle(color: Colors.white30),
+      suffixIcon: const Icon(Icons.search),
+      fillColor: const Color.fromRGBO(20, 20, 20, 1),
+      filled: true,
+    ),
+  );
 
   CountryCode? selectedCountryCode;
   final TextEditingController _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  bool phoneExist() {
-    String? ph = FirebaseAuth.instance.currentUser?.phoneNumber;
-    log(ph ?? "Empty Phone");
-    if (ph == null || ph.isEmpty) {
-      return false;
-    } else {
-      sendOTP(ph, context);
-      return true;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if(phoneExist()) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
+    if (authProvider.user?.phoneNumber?.isNotEmpty ?? false) {
+      // Phone number already exists, send OTP directly
+      authProvider.sendOTP(authProvider.user!.phoneNumber!, context);
       return const SizedBox();
     }
+
     return AuthWidget(
       resizeToAvoidBottomInset: false,
       child: Form(
@@ -69,18 +63,20 @@ class _AddPhoneState extends State<AddPhone> {
             const Text(
               "Add phone number",
               style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
               textAlign: TextAlign.start,
             ),
             const SizedBox(height: 10),
             const Text(
               "Input a phone number you'd like to add to your account",
               style: TextStyle(
-                  color: Colors.white30,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14),
+                color: Colors.white30,
+                fontWeight: FontWeight.normal,
+                fontSize: 14,
+              ),
               textAlign: TextAlign.start,
             ),
             const SizedBox(height: 10),
@@ -95,9 +91,11 @@ class _AddPhoneState extends State<AddPhone> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text(
-                        "  Phone",
+                        "Phone",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, letterSpacing: 1.1),
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.1,
+                        ),
                       ),
                       const SizedBox(height: 6),
                       TextFormField(
@@ -106,7 +104,7 @@ class _AddPhoneState extends State<AddPhone> {
                         style: const TextStyle(color: Colors.white),
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(10)
+                          LengthLimitingTextInputFormatter(10),
                         ],
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -124,17 +122,31 @@ class _AddPhoneState extends State<AddPhone> {
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
             const SizedBox(height: 350),
             Align(
               alignment: Alignment.bottomCenter,
-              child: buttonConfirm("Continue", () {
+              child: buttonConfirm("Continue", () async {
                 if (_formKey.currentState!.validate()) {
                   String phoneNumber =
                       "${selectedCountryCode?.dialCode ?? "+91"}${_phoneController.text.trim()}";
-                  sendOTP(phoneNumber, context);
+
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  );
+
+                  // Send OTP using the AuthProvider
+                  // await context.read<AuthProvider>().checkPhoneNumberAndSendOTP(phoneNumber, context);
+                  authProvider.sendOTP(phoneNumber, context);
+                  Navigator.of(context).pop();
                 }
               }, width: MediaQuery.of(context).size.width),
             ),
@@ -167,7 +179,9 @@ class _AddPhoneState extends State<AddPhone> {
                     ? selectedCountryCode!.dialCode
                     : "+91",
                 style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold),
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const Icon(Icons.arrow_drop_down),
               const VerticalDivider(
@@ -175,7 +189,7 @@ class _AddPhoneState extends State<AddPhone> {
                 thickness: 1.5,
                 indent: 6,
                 endIndent: 6,
-              )
+              ),
             ],
           ),
         ),

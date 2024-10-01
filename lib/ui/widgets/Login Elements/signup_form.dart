@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:otter/services/login_services.dart';
+import 'package:otter/services/auth_provider.dart';
 
 import '../../../main.dart';
 
@@ -16,6 +16,7 @@ class _SignUpFormState extends State<SignUpForm> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final AuthProvider authProvider = AuthProvider();
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
@@ -50,19 +51,18 @@ class _SignUpFormState extends State<SignUpForm> {
 
   void submit() async {
     if (_formKey.currentState!.validate()) {
-      String? signUpError = await userSignUp(
+      String? signUpError = await authProvider.signup(
         emailController.text,
         passwordController.text,
-        widget.onSignUp
       );
 
-      if (signUpError != null && mounted) {
+      if (mounted) {
         setState(() {
           _emailError = null;
           _passwordError = null;
           _confirmPasswordError = null;
 
-          if (signUpError.contains('email')) {
+          if (signUpError?.contains('email') ?? false) {
             _emailError = signUpError;
           } else {
             _passwordError = signUpError;

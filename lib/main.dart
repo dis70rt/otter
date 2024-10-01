@@ -2,8 +2,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:otter/constants/theme.dart';
 import 'package:otter/firebase_options.dart';
+import 'package:otter/services/auth_provider.dart';
+import 'package:otter/ui/screens/add_phone.dart';
 import 'package:otter/ui/screens/home_screen.dart';
 import 'package:otter/utils/snackbar.dart';
+import 'package:provider/provider.dart';
 
 import 'ui/screens/auth_page.dart';
 
@@ -22,15 +25,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      scaffoldMessengerKey: Snackbar.messengerKey,
-      navigatorKey: navigatorKey,
-      theme: AppTheme.dark,
-      routes: {
-        "/home": (context) => const HomeScreen()
-      },
-      home: const AuthPage(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AuthProvider())
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        scaffoldMessengerKey: Snackbar.messengerKey,
+        navigatorKey: navigatorKey,
+        theme: AppTheme.dark,
+        routes: {
+          "/home": (context) => const HomeScreen(),
+          "/auth": (context) => const AuthPage(),
+          "/phone": (context) => const AddPhone(),
+        },
+        home: const AuthPage(),
+      ),
     );
   }
 }

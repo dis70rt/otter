@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:otter/services/login_services.dart';
+import 'package:otter/services/auth_provider.dart';
 
 import '../../../main.dart';
 
@@ -22,6 +22,8 @@ class _LoginFormState extends State<LoginForm> {
 
   String? _emailError;
   String? _passwordError;
+
+  final AuthProvider authProvider = AuthProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +58,7 @@ class _LoginFormState extends State<LoginForm> {
 
   void submit() async {
     if (_formKey.currentState!.validate()) {
-      String? loginError = await userLogin(
+      String? loginError = await authProvider.login(
         emailController.text,
         passwordController.text,
         context
