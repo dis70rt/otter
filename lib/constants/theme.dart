@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:otter/constants/colors.dart';
 
 class AppTheme {
   static final dark = ThemeData.dark().copyWith(
+    scaffoldBackgroundColor: AppColors.primaryDarkBlue,
+    appBarTheme: const AppBarTheme(backgroundColor:AppColors.secondaryDarkBlue),
       inputDecorationTheme: InputDecorationTheme(
     focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
