@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:otter/constants/theme.dart';
 import 'package:otter/firebase_options.dart';
 import 'package:otter/services/auth_provider.dart';
+import 'package:otter/services/database_provider.dart';
 import 'package:otter/ui/screens/add_phone.dart';
 import 'package:otter/ui/screens/dashboard_screen.dart';
 import 'package:otter/ui/screens/home_screen.dart';
@@ -28,7 +29,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => AuthProvider())
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => FireStoreProvider())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -4,7 +4,7 @@ import 'package:otter/constants/colors.dart';
 class AppTheme {
   static final dark = ThemeData.dark().copyWith(
     scaffoldBackgroundColor: AppColors.primaryDarkBlue,
-    appBarTheme: const AppBarTheme(backgroundColor:AppColors.secondaryDarkBlue),
+    appBarTheme: const AppBarTheme(backgroundColor:AppColors.secondaryDarkBlue, surfaceTintColor: Colors.transparent),
       inputDecorationTheme: InputDecorationTheme(
     focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),

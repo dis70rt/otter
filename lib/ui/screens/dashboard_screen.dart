@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:otter/services/auth_provider.dart';
+import 'package:otter/ui/widgets/Dashboard/dashboard_widget.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -68,7 +69,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             )),
       ),
-      body: Container()
+      body: const Center(child: DashboardWidget())
     );
   }
 }
