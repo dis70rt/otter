@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => AuthProvider()),
-        ChangeNotifierProvider(create: (context) => FireStoreProvider())
+        ChangeNotifierProvider(create: (context) => FireStoreProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

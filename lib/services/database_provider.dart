@@ -1,7 +1,8 @@
+import 'dart:convert';
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'company_model.dart';
 
 class FireStoreProvider extends ChangeNotifier {
@@ -10,19 +11,37 @@ class FireStoreProvider extends ChangeNotifier {
 
   final List<CompanyModel> _companyDataList = [];
   bool _isLoading = true;
-  DocumentSnapshot? _lastDocument; // Keeps track of the last document in a page
-  bool _hasMoreData = true; // Checks if there are more documents to load
-  static const int _limit = 10; // Number of documents per page
+  DocumentSnapshot? _lastDocument;
+  bool _hasMoreData = true;
+  static const int _limit = 10;
 
   List<CompanyModel> get companyDataList => _companyDataList;
-
   bool get isLoading => _isLoading;
 
+  List<String> _searchHistory = [];
+  List<String> get searchHistory => _searchHistory;
+
   FireStoreProvider() {
-    fetchCompanyData();
+    _loadCachedCompanyData();
+    _loadSearchHistory();
   }
 
-  // Fetch the initial page of data
+  Future<void> _loadCachedCompanyData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? cachedData = prefs.getString('companyData');
+
+    if (cachedData != null) {
+      List<dynamic> cachedList = jsonDecode(cachedData);
+      _companyDataList.addAll(
+        cachedList.map((json) => CompanyModel.fromJson(json)).toList(),
+      );
+      _isLoading = false;
+      notifyListeners();
+    } else {
+      fetchCompanyData();
+    }
+  }
+
   Future<void> fetchCompanyData() async {
     if (!_hasMoreData) return;
 
@@ -42,6 +61,8 @@ class FireStoreProvider extends ChangeNotifier {
         _companyDataList.addAll(newCompanies);
         _isLoading = false;
         _hasMoreData = newCompanies.length == _limit;
+
+        await _cacheCompanyData();
         notifyListeners();
       }
     } catch (e) {
@@ -49,5 +70,71 @@ class FireStoreProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> _cacheCompanyData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String encodedData =
+        jsonEncode(_companyDataList.map((e) => e.toJson()).toList());
+    await prefs.setString('companyData', encodedData);
+  }
+
+  Future<void> search(String query) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      QuerySnapshot snapshot;
+
+      if (query.isEmpty) {
+        snapshot = await _companyCollection.get();
+      } else {
+        Query searchQuery = _companyCollection
+            .where('Company', isGreaterThanOrEqualTo: query)
+            .where('Company', isLessThanOrEqualTo: '$query\uf8ff');
+        snapshot = await searchQuery.get();
+      }
+      _companyDataList.clear();
+      List<CompanyModel> newCompanies =
+          snapshot.docs.map((doc) => CompanyModel.fromFirestore(doc)).toList();
+
+      _companyDataList.addAll(newCompanies);
+
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      log("Error searching company data: $e");
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _loadSearchHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _searchHistory = prefs.getStringList('searchHistory') ?? [];
+    notifyListeners();
+  }
+
+  Future<void> addToSearchHistory(String query) async {
+    if (!_searchHistory.contains(query)) {
+      _searchHistory.insert(0, query);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList('searchHistory', _searchHistory);
+      notifyListeners();
+    }
+  }
+
+  Future<void> clearSearchHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('searchHistory');
+    _searchHistory.clear();
+    notifyListeners();
+  }
+
+  Future<void> refreshCompanyData() async {
+    _companyDataList.clear();
+    _lastDocument = null;
+    _hasMoreData = true;
+    await fetchCompanyData();
   }
 }

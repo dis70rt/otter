@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -20,9 +19,11 @@ class DashboardWidget extends StatelessWidget {
         final data = docsProvider.companyDataList;
         return ListView.builder(
           itemCount: data.length + (docsProvider.isLoading ? 1 : 0),
+          physics: const BouncingScrollPhysics(),
           itemBuilder: (context, index) {
             if (index < data.length) {
-              return _companyCard(data[index]);
+              return GestureDetector(
+                  onTap: () {}, child: companyCard(data[index]));
             } else {
               return const Padding(
                 padding: EdgeInsets.all(16.0),
@@ -47,7 +48,7 @@ class DashboardWidget extends StatelessWidget {
     return controller;
   }
 
-  Widget _companyCard(CompanyModel data) {
+  Widget companyCard(CompanyModel data) {
     return BackdropFilter(
       filter: ImageFilter.blur(),
       child: Padding(
@@ -99,9 +100,16 @@ class DashboardWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const SizedBox(height: 15),
+                    const Text(
+                      "STOCK PRICE",
+                      style: TextStyle(
+                          color: Colors.white60,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12),
+                    ),
+                    const SizedBox(height: 5),
                     _stockPriceLineChart(data),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 10),
                     Text(
                       "MCAP: \$${_formatMarketCap(data.marketCap)}",
                       style: const TextStyle(
@@ -127,7 +135,7 @@ class DashboardWidget extends StatelessWidget {
 
   Widget _stockPriceLineChart(CompanyModel data) {
     final spots = _generateLineChartSpots(data.stockPrices);
-    // If there are no data points, we should return an empty chart or a placeholder
+
     if (spots.isEmpty) {
       return const Center(
         child: Text(
@@ -137,51 +145,47 @@ class DashboardWidget extends StatelessWidget {
       );
     }
 
-    // Calculate min and max Y values based on actual stock prices
     final maxY = spots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b);
     final minY = spots.map((spot) => spot.y).reduce((a, b) => a < b ? a : b);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 0),
-      child: SizedBox(
-        height: 40,
-        width: 120,
-        child: LineChart(
-          LineChartData(
-            gridData: const FlGridData(show: false),
-            titlesData: const FlTitlesData(show: false),
-            borderData: FlBorderData(show: false),
-            lineBarsData: [
-              LineChartBarData(
-                spots: spots,
-                isCurved: true,
-                barWidth: 2,
-                color: Colors.tealAccent,
-                belowBarData: BarAreaData(
-                    show: true, color: Colors.tealAccent.withOpacity(0.3)),
-                dotData: const FlDotData(show: false),
-                preventCurveOverShooting: true,
-                isStrokeCapRound: true,
-              ),
-            ],
-            minX: 0,
-            maxX: spots.length.toDouble() - 1,
-            minY: minY,
-            maxY: maxY,
-            clipData: const FlClipData.all(),
-          ),
+    return SizedBox(
+      height: 40,
+      width: 120,
+      child: LineChart(
+        LineChartData(
+          gridData: const FlGridData(show: false),
+          titlesData: const FlTitlesData(show: false),
+          borderData: FlBorderData(show: false),
+          lineBarsData: [
+            LineChartBarData(
+              preventCurveOvershootingThreshold: 100,
+              spots: spots,
+              isCurved: true,
+              barWidth: 2,
+              color: Colors.lightBlueAccent,
+              belowBarData: BarAreaData(
+                  show: true, color: Colors.tealAccent.withOpacity(0.3)),
+              dotData: const FlDotData(show: false),
+              preventCurveOverShooting: true,
+              isStrokeCapRound: true,
+            ),
+          ],
+          minX: 0,
+          maxX: spots.length.toDouble() - 1,
+          minY: minY,
+          maxY: maxY,
+          clipData: const FlClipData.all(),
         ),
       ),
     );
   }
 
   List<FlSpot> _generateLineChartSpots(Map<String, num?> stockPrices) {
-    final sortedYears = stockPrices.keys.toList(); // Sort the keys (years)
+    final sortedYears = stockPrices.keys.toList();
     return List.generate(sortedYears.length, (i) {
       final stockPrice = stockPrices[sortedYears[i]];
       if (stockPrice == null) return null;
 
-      // Use original stock prices without scaling
       return FlSpot(i.toDouble(), stockPrice.toDouble());
     }).whereType<FlSpot>().toList();
   }

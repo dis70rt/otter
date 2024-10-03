@@ -3,21 +3,20 @@ import 'package:otter/constants/colors.dart';
 
 class AppTheme {
   static final dark = ThemeData.dark().copyWith(
-    scaffoldBackgroundColor: AppColors.primaryDarkBlue,
-    appBarTheme: const AppBarTheme(backgroundColor:AppColors.secondaryDarkBlue, surfaceTintColor: Colors.transparent),
+      scaffoldBackgroundColor: AppColors.primaryDarkBlue,
+      appBarTheme: AppBarTheme(
+          backgroundColor: AppColors.secondaryDarkBlue.withOpacity(0.7),
+          surfaceTintColor: Colors.transparent),
       inputDecorationTheme: InputDecorationTheme(
-    focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: Colors.white, width: 0.5)),
-
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-      borderSide: const BorderSide(color: Colors.white70),
-    ),
-    
-    floatingLabelStyle: const TextStyle(color: Colors.white),
-    labelStyle: const TextStyle(color: Colors.white70),
-    hintStyle: const TextStyle(color: Colors.white70),
-    
-  ));
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: Colors.white, width: 0.5)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Colors.white70),
+        ),
+        floatingLabelStyle: const TextStyle(color: Colors.white),
+        labelStyle: const TextStyle(color: Colors.white70),
+        hintStyle: const TextStyle(color: Colors.white70),
+      ));
 }
