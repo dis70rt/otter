@@ -89,6 +89,7 @@ class FireStoreProvider extends ChangeNotifier {
       if (query.isEmpty) {
         snapshot = await _companyCollection.get();
       } else {
+        query = query[0].toUpperCase() + query.substring(1).toLowerCase();
         Query searchQuery = _companyCollection
             .where('Company', isGreaterThanOrEqualTo: query)
             .where('Company', isLessThanOrEqualTo: '$query\uf8ff');

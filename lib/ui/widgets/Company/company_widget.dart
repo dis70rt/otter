@@ -5,8 +5,8 @@ import 'package:otter/services/company_model.dart';
 import 'package:otter/services/database_provider.dart';
 import 'package:provider/provider.dart';
 
-class DashboardWidget extends StatelessWidget {
-  const DashboardWidget({super.key});
+class CompanyWidget extends StatelessWidget {
+  const CompanyWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

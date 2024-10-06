@@ -1,14 +1,11 @@
-import 'dart:developer';
-import 'dart:ui';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:otter/constants/colors.dart';
-import 'package:otter/services/auth_provider.dart';
+import 'package:otter/services/computation.dart';
 import 'package:otter/services/database_provider.dart';
-import 'package:otter/ui/widgets/Dashboard/dashboard_widget.dart';
 import 'package:provider/provider.dart';
+
+import '../../constants/lists.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -18,148 +15,200 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final authProvider = AuthProvider();
-  final TextEditingController _searchController = TextEditingController();
+  String? selectedCountry;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<FireStoreProvider>(
-      builder: (context, dbProvider, child) => Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          flexibleSpace: ClipRRect(
-            borderRadius: BorderRadius.circular(25),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-              child: Container(
-                color: Colors.transparent,
-              ),
-            ),
-          ),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25),
-              side: const BorderSide(color: Colors.white10, width: 2)),
-          systemOverlayStyle: SystemUiOverlayStyle.light,
-          leading: GestureDetector(
-            onTap: () {},
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: CircleAvatar(
-                backgroundImage: NetworkImage(authProvider.user?.photoURL ??
-                    "https://i.imgur.com/WxNkK7J.png"),
-                backgroundColor: Colors.grey.shade200,
-              ),
-            ),
-          ),
-          elevation: 10,
-          actions: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: IconButton(
-                  icon: const Icon(
-                    Icons.logout_outlined,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {}),
-            )
-          ],
-          centerTitle: true,
-          title: const Text(
-            "OTTER",
-            style: TextStyle(
-                color: Colors.white,
-                letterSpacing: 4,
-                fontWeight: FontWeight.w900),
-          ),
-          bottom: PreferredSize(
-              preferredSize: Size(MediaQuery.of(context).size.width, 80),
-              child: Padding(
-                padding:
-                    const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 12),
-                child: Autocomplete<String>(
-                  optionsBuilder: (textEditingValue) {
-                    return dbProvider.searchHistory;
-                  },
-                  fieldViewBuilder: (context, textEditingController, focusNode,
-                      onFieldSubmitted) {
-                    _searchController.text = textEditingController.text;
-                    return TextFormField(
-                      controller: textEditingController,
-                      focusNode: focusNode,
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.zero,
-                        filled: true,
-                        fillColor: AppColors.primaryDarkBlue,
-                        prefixIcon: const Icon(Icons.search),
-                        suffixIcon: TextButton(
-                            onPressed: () {},
-                            child: TextButton(
-                              onPressed: () => dbProvider.clearSearchHistory(),
+    return SafeArea(
+      child: Consumer<FireStoreProvider>(
+        builder: (context, dbProvider, child) => Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [buildCard(dbProvider.companyDataList)],
+        ),
+      ),
+    );
+  }
 
-                              child: const Text("Clear History",
-                                  style: TextStyle(
-                                      color: AppColors.secondaryDarkBlue,
-                                      fontSize: 12)),
-                            )),
-                        hintText: "Search",
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                                width: 0, color: Colors.transparent)),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                                width: 0, color: Colors.transparent)),
+  Widget buildCard(companyData) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.secondaryDarkBlue, width: 2),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Total Companies in Country",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              GestureDetector(
+                onTap: _showCountryPicker,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 35,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Color(0xFF7373ff)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        selectedCountry ?? "Select Country",
+                        softWrap: true,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.15,
+                          color: Color(0xFF111184),
+                        ),
                       ),
-                      onChanged: (value) {
-                        dbProvider.search(value.trim());
-                      },
-                      onFieldSubmitted: (query) => dbProvider.addToSearchHistory(query),
-                    );
-                  },
-                  onSelected: (String selection) {
-                    log("Selected: $selection");
-                  },
-                  optionsViewBuilder: (context, onSelected, options) {
-                    return Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 3),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 7, sigmaY: 7),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: AppColors.primaryDarkBlue
-                                      .withOpacity(0.8)),
-                              width: 330,
-                              height: 250,
-                              child: ListView.builder(
-                                padding: EdgeInsets.zero,
-                                itemCount: options.length,
-                                itemBuilder: (context, index) {
-                                  final option = options.elementAt(index);
-
-                                  return ListTile(
-                                    onTap: () => onSelected(option),
-                                    leading: const Icon(Icons.access_time),
-                                    title: Text(option),
-                                  );
-                                },
-                              ),
-                            ),
+                      const Icon(
+                        Icons.arrow_drop_down,
+                        color: Color(0xFF111184),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Total Companies",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white54,
+                    ),
+                  ),
+                  Text(
+                    selectedCountry != null
+                        ? CompanyComputation(companyData)
+                            .companiesInSameCountry(selectedCountry!)
+                            .length
+                            .toString()
+                        : "0",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10), // Add some spacing
+              SizedBox(
+                height: 30, // Constrain height for ListView.builder
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: selectedCountry != null
+                      ? CompanyComputation(companyData)
+                          .companiesInSameCountry(selectedCountry!)
+                          .length
+                      : 0,
+                  itemBuilder: (context, index) {
+                    final company = CompanyComputation(companyData)
+                        .companiesInSameCountry(selectedCountry!)[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(60),
+                          color: AppColors.midDarkBlue
+                        ),
+                        child: Center(
+                          child: Text(
+                            company.company,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ),
                       ),
                     );
                   },
                 ),
-              )),
+              ),
+            ],
+          ),
         ),
-        body: const Center(child: DashboardWidget()),
       ),
+    );
+  }
+
+  void _showCountryPicker() {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25),
+            color: AppColors.primaryDarkBlue,
+          ),
+          height: 250,
+          child: Column(
+            children: [
+              Material(
+                type: MaterialType.transparency,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: const Text(
+                    "Select a Country",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: CupertinoPicker(
+                  backgroundColor: AppColors.primaryDarkBlue,
+                  scrollController: FixedExtentScrollController(
+                    initialItem: selectedCountry != null
+                        ? countries.indexOf(selectedCountry!)
+                        : 0,
+                  ),
+                  itemExtent: 32.0,
+                  onSelectedItemChanged: (int index) {
+                    setState(() {
+                      selectedCountry = countries[index];
+                    });
+                  },
+                  children:
+                      List<Widget>.generate(countries.length, (int index) {
+                    return Center(
+                      child: Text(
+                        countries[index],
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

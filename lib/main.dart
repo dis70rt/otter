@@ -5,7 +5,6 @@ import 'package:otter/firebase_options.dart';
 import 'package:otter/services/auth_provider.dart';
 import 'package:otter/services/database_provider.dart';
 import 'package:otter/ui/screens/add_phone.dart';
-import 'package:otter/ui/screens/dashboard_screen.dart';
 import 'package:otter/ui/screens/home_screen.dart';
 import 'package:otter/utils/snackbar.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +41,7 @@ class MyApp extends StatelessWidget {
           "/auth": (context) => const AuthPage(),
           "/phone": (context) => const AddPhone(),
         },
-        home: const DashboardScreen(),
+        home: const HomeScreen(),
       ),
     );
   }
