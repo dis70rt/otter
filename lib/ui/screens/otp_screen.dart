@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:otter/ui/widgets/auth_widget.dart';
 import 'package:otter/ui/widgets/otp_buttons.dart';
-
 import '../../services/auth_provider.dart';
 
 class OTPscreen extends StatefulWidget {
@@ -24,8 +23,9 @@ class OTPscreen extends StatefulWidget {
 
 class _OTPscreenState extends State<OTPscreen> {
   final AuthProvider authProvider = AuthProvider();
-  final List<TextEditingController> otpControllers =
-      List.generate(6, (_) => TextEditingController());
+  final List<ValueNotifier<String>> otpValues =
+      List.generate(6, (_) => ValueNotifier<String>(''));
+  final List<FocusNode> otpFocusNodes = List.generate(6, (_) => FocusNode());
   late Timer _timer;
   int _remainingTime = 120;
   bool _canResendCode = false;
@@ -43,11 +43,9 @@ class _OTPscreenState extends State<OTPscreen> {
       if (_remainingTime > 0) {
         setState(() {
           _remainingTime--;
+          _canResendCode = _remainingTime == 0; // Update resend code status
         });
       } else {
-        setState(() {
-          _canResendCode = true;
-        });
         _timer.cancel();
       }
     });
@@ -55,8 +53,11 @@ class _OTPscreenState extends State<OTPscreen> {
 
   @override
   void dispose() {
-    for (var controller in otpControllers) {
-      controller.dispose();
+    for (var notifier in otpValues) {
+      notifier.dispose();
+    }
+    for (var focusNode in otpFocusNodes) {
+      focusNode.dispose();
     }
     _timer.cancel();
     super.dispose();
@@ -79,7 +80,7 @@ class _OTPscreenState extends State<OTPscreen> {
       _errorMessage = null;
     });
 
-    String otp = otpControllers.map((ctrl) => ctrl.text).join();
+    String otp = otpValues.map((notifier) => notifier.value).join();
     if (otp.length != 6) {
       setState(() {
         _isLoading = false;
@@ -94,31 +95,34 @@ class _OTPscreenState extends State<OTPscreen> {
         smsCode: otp,
       );
 
-      try {
-        await authProvider.user?.linkWithCredential(authCredential);
-      } on Exception catch (e) {
-        log("CHECK ERROR >> ${e.toString()}");
-      }
+      // Attempt to sign in with the provided credential instead of linking
+      await fb_auth.FirebaseAuth.instance.signInWithCredential(authCredential);
+      // If successful, navigate to the home screen
       Navigator.popAndPushNamed(context, "/home");
+    } on fb_auth.FirebaseAuthException catch (e) {
+      log("CHECK ERROR >> ${e.toString()}");
+      setState(() {
+        _isLoading = false;
+        _errorMessage = e.message ?? "Invalid OTP. Please try again.";
+      });
     } catch (e) {
       log("CHECK ERROR >> ${e.toString()}");
       setState(() {
         _isLoading = false;
-        _errorMessage = "Invalid OTP. Please try again.";
+        _errorMessage = "An error occurred. Please try again.";
       });
     }
   }
 
   void _onOtpFieldChanged(String value, int index) {
-    if (value.length == 1 && index < otpControllers.length - 1) {
-      FocusScope.of(context).nextFocus();
+    if (value.length == 1) {
+      if (index < otpValues.length - 1) {
+        FocusScope.of(context).requestFocus(otpFocusNodes[index + 1]);
+      } else {
+        verifyOTP(); // Verify OTP if it's the last field
+      }
     } else if (value.isEmpty && index > 0) {
-      FocusScope.of(context).previousFocus();
-    }
-
-    // Automatically verify if it's the last field
-    if (index == otpControllers.length - 1 && value.length == 1) {
-      verifyOTP();
+      FocusScope.of(context).requestFocus(otpFocusNodes[index - 1]);
     }
   }
 
@@ -128,79 +132,87 @@ class _OTPscreenState extends State<OTPscreen> {
     String countryCode = ph.substring(0, ph.length - 10);
     String phNo = ph.substring(ph.length - 10);
 
-    return AuthWidget(
-      resizeToAvoidBottomInset: true,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const Text(
-            "Verification Code",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
-          const Text(
-            "We have sent the code verification to",
-            style: TextStyle(
-              color: Colors.white30,
-              fontWeight: FontWeight.normal,
-              fontSize: 12,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Text(
-                "$countryCode ${phNo[0]}******${phNo.substring(7)}",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
+    return Stack(
+      children: [
+        AuthWidget(
+          resizeToAvoidBottomInset: true,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Text(
+                  "Verification Code",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              GestureDetector(
-                onTap: () {
-                  // Handle changing the phone number
-                },
-                child: const Text(
-                  "Change phone number?",
-                  style: TextStyle(color: Colors.blueAccent),
+                const Text(
+                  "We have sent the code verification to",
+                  style: TextStyle(
+                    color: Colors.white30,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 12,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          otpForm(),
-          const SizedBox(height: 30),
-          Center(
-            child: Text(
-              _canResendCode
-                  ? "You can now resend the code."
-                  : "Resend code after: ${_formatTime(_remainingTime)}",
-              style: const TextStyle(color: Colors.white38),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Text(
+                      "$countryCode ${phNo[0]}******${phNo.substring(7)}",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: () {},
+                      child: const Text(
+                        "Change phone number?",
+                        style: TextStyle(color: Colors.blueAccent),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                otpForm(),
+                const SizedBox(height: 30),
+                Center(
+                  child: Text(
+                    _canResendCode
+                        ? "You can now resend the code."
+                        : "Resend code after: ${_formatTime(_remainingTime)}",
+                    style: const TextStyle(color: Colors.white38),
+                  ),
+                ),
+                if (_errorMessage != null) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.redAccent),
+                  ),
+                ],
+                const SizedBox(height: 75),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: otpButtons(_canResendCode, _resendCode, verifyOTP),
+                ),
+              ],
             ),
           ),
-          if (_errorMessage != null) ...[
-            const SizedBox(height: 10),
-            Text(
-              _errorMessage!,
-              style: const TextStyle(color: Colors.redAccent),
+        ),
+        if (_isLoading)
+          Container(
+            color: Colors.black54, // Dull background
+            child: const Center(
+              child: CircularProgressIndicator(),
             ),
-          ],
-          const SizedBox(height: 75),
-          if (_isLoading)
-            const CircularProgressIndicator()
-          else
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: otpButtons(_canResendCode, _resendCode, verifyOTP),
-            ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 
@@ -210,39 +222,53 @@ class _OTPscreenState extends State<OTPscreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(
           6,
-          (index) => _buildOtpTextField(otpControllers[index], index),
+          (index) => Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: _buildOtpTextField(otpValues[index], index),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildOtpTextField(TextEditingController controller, int index) {
-    return SizedBox(
-      height: 54,
-      width: 50,
-      child: TextFormField(
-        controller: controller,
-        cursorColor: Colors.blueAccent,
-        onChanged: (value) => _onOtpFieldChanged(value, index),
-        decoration: InputDecoration(
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Colors.blueAccent),
+  Widget _buildOtpTextField(ValueNotifier<String> valueNotifier, int index) {
+    return ValueListenableBuilder<String>(
+      valueListenable: valueNotifier,
+      builder: (context, value, child) {
+        return TextFormField(
+          // Removed initialValue to reduce unnecessary rebuilds
+          onChanged: (value) {
+            valueNotifier.value = value; // Update value notifier
+            _onOtpFieldChanged(value, index);
+          },
+          cursorColor: Colors.blueAccent,
+          decoration: InputDecoration(
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.blueAccent),
+            ),
+            fillColor: Colors.blueGrey.shade900.withOpacity(0.5),
+            filled: true,
           ),
-          fillColor: Colors.blueGrey.shade900.withOpacity(0.5),
-          filled: true,
-        ),
-        style: const TextStyle(
-          fontSize: 17,
-          fontWeight: FontWeight.bold,
-        ),
-        keyboardType: TextInputType.number,
-        inputFormatters: [
-          LengthLimitingTextInputFormatter(1),
-          FilteringTextInputFormatter.digitsOnly,
-        ],
-        textAlign: TextAlign.center,
-      ),
+          style: const TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+          ),
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            LengthLimitingTextInputFormatter(1),
+            FilteringTextInputFormatter.digitsOnly,
+          ],
+          textAlign: TextAlign.center,
+          focusNode: otpFocusNodes[index], // Keep track of focus
+          onTap: () {
+            FocusScope.of(context).requestFocus(
+                otpFocusNodes[index]); // Ensure focus stays on the field
+          },
+        );
+      },
     );
   }
 

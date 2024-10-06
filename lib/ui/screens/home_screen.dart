@@ -34,10 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: buildAppbar(authProvider, context, dbProvider, _selectedIndex),
       body: IndexedStack(
         index: _selectedIndex,
-        children: const [
-          DashboardScreen(),
-          CompanyWidget()
-        ],
+        children: const [DashboardScreen(), CompanyWidget()],
       ),
       bottomNavigationBar:
           buildBottomNavigationBar(_onItemTapped, _selectedIndex),

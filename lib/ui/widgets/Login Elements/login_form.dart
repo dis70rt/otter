@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:otter/constants/colors.dart';
 import 'package:otter/services/auth_provider.dart';
 
 import '../../../main.dart';
@@ -117,7 +118,7 @@ class _LoginFormState extends State<LoginForm> {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           gradient: LinearGradient(colors: [
-            Colors.blueAccent.shade700,
+            AppColors.secondaryDarkBlue,
             Colors.blueAccent.shade400
           ])),
       child: MaterialButton(

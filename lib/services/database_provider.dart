@@ -35,28 +35,28 @@ class FireStoreProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } else {
-      await fetchCompanyData();  // Fetch from Firestore if cache is empty
+      await fetchCompanyData();
     }
   }
 
   Future<void> fetchCompanyData() async {
-    _isLoading = true; // Set loading state
-    notifyListeners(); // Notify listeners to show loading state
+    _isLoading = true;
+    notifyListeners();
 
     try {
-      QuerySnapshot snapshot = await _companyCollection.get(); // Fetch all data
+      QuerySnapshot snapshot = await _companyCollection.get();
 
       if (snapshot.docs.isNotEmpty) {
         List<CompanyModel> newCompanies = snapshot.docs
             .map((doc) => CompanyModel.fromFirestore(doc))
             .toList();
 
-        _companyDataList.clear(); // Clear previous data
+        _companyDataList.clear();
         _companyDataList.addAll(newCompanies);
         _isLoading = false;
 
-        await _cacheCompanyData(); // Cache the fetched data
-        notifyListeners(); // Notify listeners with new data
+        await _cacheCompanyData();
+        notifyListeners();
       }
     } catch (e) {
       log("Error fetching company data: $e");
@@ -127,6 +127,6 @@ class FireStoreProvider extends ChangeNotifier {
 
   Future<void> refreshCompanyData() async {
     _companyDataList.clear();
-    await fetchCompanyData(); // Refetch company data from Firestore
+    await fetchCompanyData();
   }
 }

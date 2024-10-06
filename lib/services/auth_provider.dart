@@ -62,7 +62,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> logout(BuildContext context) async {
-    await _auth.signOut();
+    _auth.signOut();
     _user = null;
     notifyListeners();
     Navigator.popAndPushNamed(context, "/auth");

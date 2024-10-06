@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:otter/constants/colors.dart';
 
 Widget otpButtons(bool isResend, VoidCallback resendCode, VoidCallback verify) {
   return Center(
@@ -49,7 +50,7 @@ Widget buttonConfirm(String label, VoidCallback onTap, {double width = 150}) {
       width: width,
       padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.blueAccent.withOpacity(1),
+        color: AppColors.secondaryDarkBlue,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.blueAccent, width: 0.6),
       ),

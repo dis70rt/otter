@@ -25,16 +25,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ? const VerifyEmail()
       : AuthWidget(
           child: Column(
-            children: [
-              SignUpForm(onSignUp: toggle),
-              const SizedBox(height: 30),
-              dividerWithText("Or", context),
-              const SizedBox(height: 20),
-              const OAuth(),
-              const SizedBox(height: 40),
-              loginText(context, widget.onClickedLogin),
-              const SizedBox(height: 20)
-            ],
-          )
-        );
+          children: [
+            SignUpForm(onSignUp: toggle),
+            const SizedBox(height: 30),
+            dividerWithText("Or", context),
+            const SizedBox(height: 20),
+            const OAuth(),
+            const SizedBox(height: 40),
+            loginText(context, widget.onClickedLogin),
+            const SizedBox(height: 20)
+          ],
+        ));
 }

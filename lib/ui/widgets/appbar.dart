@@ -2,9 +2,12 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:otter/services/auth_provider.dart';
 import 'package:otter/services/database_provider.dart';
 
 import 'search_bar.dart';
+
+final AuthProvider _auth = AuthProvider();
 
 AppBar buildAppbar(dynamic authProvider, BuildContext context,
     FireStoreProvider dbProvider, int selectedIndex) {
@@ -38,7 +41,7 @@ AppBar buildAppbar(dynamic authProvider, BuildContext context,
     actions: [
       IconButton(
         icon: const Icon(Icons.logout_outlined, color: Colors.white),
-        onPressed: () {},
+        onPressed: () => _auth.logout(context)
       )
     ],
     centerTitle: true,
@@ -47,7 +50,7 @@ AppBar buildAppbar(dynamic authProvider, BuildContext context,
       style: TextStyle(
           color: Colors.white, letterSpacing: 8, fontWeight: FontWeight.w900),
     ),
-    bottom: selectedIndex == 2
+    bottom: selectedIndex == 1
         ? PreferredSize(
             preferredSize: Size(MediaQuery.of(context).size.width, 80),
             child: buildSearchBar(dbProvider),
@@ -55,6 +58,8 @@ AppBar buildAppbar(dynamic authProvider, BuildContext context,
         : PreferredSize(
             preferredSize: Size(MediaQuery.of(context).size.width, 10),
             child: const AnimatedSize(
-              duration: Duration(seconds: 1), curve: Curves.easeIn,)),
+              duration: Duration(seconds: 1),
+              curve: Curves.easeIn,
+            )),
   );
 }

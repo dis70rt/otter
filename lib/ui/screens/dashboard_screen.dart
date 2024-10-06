@@ -16,7 +16,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   String? selectedCountry;
-  final companyComputation = CompanyComputation(); 
+  final companyComputation = CompanyComputation();
 
   @override
   Widget build(BuildContext context) {
@@ -129,11 +129,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 2),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(60),
-                          color: AppColors.midDarkBlue
-                        ),
+                            borderRadius: BorderRadius.circular(60),
+                            color: AppColors.midDarkBlue),
                         child: Center(
                           child: Text(
                             company.company,

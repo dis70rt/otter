@@ -2,12 +2,14 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:otter/constants/colors.dart';
 
 class AuthWidget extends StatelessWidget {
   final bool? resizeToAvoidBottomInset;
   final Widget child;
 
-  const AuthWidget({super.key, required this.child, this.resizeToAvoidBottomInset});
+  const AuthWidget(
+      {super.key, required this.child, this.resizeToAvoidBottomInset});
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +31,10 @@ class AuthWidget extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.grey.shade500.withOpacity(0.1),
-                      gradient: LinearGradient(
-                        begin: const Alignment(0, 1),
-                        end: const Alignment(0, 0),
-                        colors: [Colors.blue.shade900, Colors.blue],
+                      gradient: const LinearGradient(
+                        begin: Alignment(0, 1),
+                        end: Alignment(0, 0),
+                        colors: [AppColors.primaryDarkBlue, AppColors.secondaryDarkBlue],
                       ),
                       border: const Border(
                           top: BorderSide(color: Colors.white10, width: 2)),

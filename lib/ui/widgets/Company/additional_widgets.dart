@@ -66,7 +66,9 @@ class _GraphsState extends State<Graphs> {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: isSelected ? AppColors.primaryDarkBlue : AppColors.secondaryDarkBlue,
+          color: isSelected
+              ? AppColors.primaryDarkBlue
+              : AppColors.secondaryDarkBlue,
         ),
         child: Center(
           child: Text(

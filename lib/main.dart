@@ -13,14 +13,13 @@ import 'ui/screens/auth_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const MyApp());
 }
 
 final navigatorKey = GlobalKey<NavigatorState>();
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -41,7 +40,7 @@ class MyApp extends StatelessWidget {
           "/auth": (context) => const AuthPage(),
           "/phone": (context) => const AddPhone(),
         },
-        home: const HomeScreen(),
+        home: const AuthPage(),
       ),
     );
   }

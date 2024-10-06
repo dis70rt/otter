@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:otter/constants/colors.dart';
 import 'package:otter/ui/widgets/Login%20Elements/signup.dart';
 import 'package:otter/ui/widgets/auth_widget.dart';
 import 'package:otter/utils/snackbar.dart';
@@ -76,7 +77,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           gradient: LinearGradient(colors: [
-            Colors.blueAccent.shade700,
+            AppColors.secondaryDarkBlue,
             Colors.blueAccent.shade400
           ])),
       child: MaterialButton(
