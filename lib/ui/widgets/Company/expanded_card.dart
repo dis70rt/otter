@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:otter/services/computation.dart';
 import 'package:otter/services/database_provider.dart';
 import 'package:otter/ui/widgets/Company/additional_widgets.dart';
+import 'package:otter/ui/widgets/Company/changes_dialog.dart';
 import 'package:provider/provider.dart';
 
 import '../../../services/company_model.dart';
 import 'stock_price_linegraph.dart';
 
 class ExpandableCompanyCard extends StatefulWidget {
-  final CompanyModel data;
-  const ExpandableCompanyCard({super.key, required this.data});
+  final CompanyModel company;
+  const ExpandableCompanyCard({super.key, required this.company});
 
   @override
   State<ExpandableCompanyCard> createState() => _ExpandableCompanyCardState();
@@ -56,7 +57,7 @@ class _ExpandableCompanyCardState extends State<ExpandableCompanyCard>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "${widget.data.country.toUpperCase()} (${widget.data.countryCode})",
+                          "${widget.company.country.toUpperCase()} (${widget.company.countryCode})",
                           style: const TextStyle(
                               color: Colors.white60,
                               fontWeight: FontWeight.bold,
@@ -64,7 +65,7 @@ class _ExpandableCompanyCardState extends State<ExpandableCompanyCard>
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          widget.data.company,
+                          widget.company.company,
                           style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -72,7 +73,7 @@ class _ExpandableCompanyCardState extends State<ExpandableCompanyCard>
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          "DIVERSITY: ${widget.data.diversity}%",
+                          "DIVERSITY: ${widget.company.diversity}%",
                           style: const TextStyle(
                               color: Colors.white60,
                               fontWeight: FontWeight.bold,
@@ -94,10 +95,10 @@ class _ExpandableCompanyCardState extends State<ExpandableCompanyCard>
                               fontSize: 12),
                         ),
                         const SizedBox(height: 5),
-                        stockPriceLineChart(widget.data),
+                        stockPriceLineChart(widget.company),
                         const SizedBox(height: 10),
                         Text(
-                          "MCAP: \$${formatMarketCap(widget.data.marketCap)}",
+                          "MCAP: \$${formatMarketCap(widget.company.marketCap)}",
                           style: const TextStyle(
                               color: Colors.white60,
                               fontWeight: FontWeight.bold,
@@ -119,7 +120,7 @@ class _ExpandableCompanyCardState extends State<ExpandableCompanyCard>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Other Greater Divesity\nCompanies in ${widget.data.country}",
+                          "Other Greater Divesity\nCompanies in ${widget.company.country}",
                           style: const TextStyle(color: Colors.white70),
                         ),
                         const SizedBox(width: 40),
@@ -129,9 +130,10 @@ class _ExpandableCompanyCardState extends State<ExpandableCompanyCard>
                             height: 30,
                             child: Consumer<FireStoreProvider>(
                                 builder: (context, dbProvider, child) {
-                              final computeData = CompanyComputation(
-                                      dbProvider.companyDataList)
-                                  .greaterDiversityInSameCountry(widget.data);
+                              final computeData =
+                                  CompanyComputation(dbProvider.companyDataList)
+                                      .greaterDiversityInSameCountry(
+                                          widget.company);
                               return ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: computeData.length,
@@ -166,7 +168,19 @@ class _ExpandableCompanyCardState extends State<ExpandableCompanyCard>
                     ),
                     const Divider(color: Colors.white12),
                     const SizedBox(height: 5),
-                    Graphs(company: widget.data)
+                    Graphs(company: widget.company),
+                    const Divider(color: Colors.white12),
+                    Consumer<FireStoreProvider>(
+                      builder: (context, value, child) => FutureBuilder(
+                          future: CompanyComputation(value.companyDataList)
+                              .commentOnGrowth(
+                                  widget.company,
+                                  () => showBlurredDialog(
+                                      widget.company, context)),
+                          builder: (context, snapshot) {
+                            return Center(child: snapshot.data);
+                          }),
+                    )
                   ],
                 ),
                 crossFadeState: _isExpanded

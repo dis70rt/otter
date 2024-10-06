@@ -61,7 +61,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   height: 35,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Color(0xFF7373ff)),
+                      color: const Color(0xFF7373ff)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,

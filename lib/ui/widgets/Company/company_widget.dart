@@ -25,7 +25,7 @@ class _CompanyWidgetState extends State<CompanyWidget> {
           physics: const BouncingScrollPhysics(),
           itemBuilder: (context, index) {
             if (index < data.length) {
-              return ExpandableCompanyCard(data: data[index]);
+              return ExpandableCompanyCard(company: data[index]);
             } else {
               return const Padding(
                 padding: EdgeInsets.all(16.0),

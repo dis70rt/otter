@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:otter/ui/widgets/auth_widget.dart';
@@ -89,7 +89,7 @@ class _OTPscreenState extends State<OTPscreen> {
     }
 
     try {
-      final authCredential = fbAuth.PhoneAuthProvider.credential(
+      final authCredential = fb_auth.PhoneAuthProvider.credential(
         verificationId: widget.verificationID,
         smsCode: otp,
       );
