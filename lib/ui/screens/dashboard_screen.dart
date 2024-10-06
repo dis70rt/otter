@@ -128,7 +128,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(60),
                           color: AppColors.midDarkBlue

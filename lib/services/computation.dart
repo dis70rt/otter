@@ -17,7 +17,7 @@ class CompanyComputation {
     Map<String, dynamic> results = {
       // 'companiesInSameCountry': companiesInSameCountry(company),
       // 'greaterDiversityInSameCountry':
-          // await greaterDiversityInSameCountry(company),
+      // await greaterDiversityInSameCountry(company),
       'yearOverYearComparison': await _yearOverYearComparison(company),
       'greaterMetrics': await _compareMetrics(company),
       // 'growthAndStability': await _commentOnGrowth(company),
@@ -29,13 +29,13 @@ class CompanyComputation {
     return results;
   }
 
-  List<CompanyModel> companiesInSameCountry(
-      String country) {
-    return companyData.where((c) => c.country.toLowerCase() == country.toLowerCase()).toList();
+  List<CompanyModel> companiesInSameCountry(String country) {
+    return companyData
+        .where((c) => c.country.toLowerCase() == country.toLowerCase())
+        .toList();
   }
 
-  Future<List<CompanyModel>> greaterDiversityInSameCountry(
-      CompanyModel company) async {
+  List<CompanyModel> greaterDiversityInSameCountry(CompanyModel company) {
     return companyData
         .where((c) =>
             c.country == company.country && c.diversity > company.diversity)
