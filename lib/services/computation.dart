@@ -1,14 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:otter/services/database_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'company_model.dart';
 
 class CompanyComputation {
-  final List<CompanyModel> companyData;
-  CompanyComputation(this.companyData);
+  final FireStoreProvider fireStoreProvider = FireStoreProvider();
+  late final List<CompanyModel> companyData;
+
+  CompanyComputation() {
+    companyData = fireStoreProvider.companyDataList;
+  }
 
   List<CompanyModel> companiesInSameCountry(String country) {
     return companyData
@@ -40,7 +44,12 @@ class CompanyComputation {
     for (int i = 1; i < years.length; i++) {
       final previous = (data[years[i - 1]] ?? 0).toDouble();
       final current = (data[years[i]] ?? 0).toDouble();
-      changes[years[i]] = ((current - previous) / previous) * 100;
+
+      if (previous != 0) {
+        changes[years[i]] = ((current - previous) / previous) * 100;
+      } else {
+        changes[years[i]] = 0;
+      }
     }
 
     return changes;
@@ -62,12 +71,6 @@ class CompanyComputation {
     final weightedMedianMarketShareChange =
         _calculateWeightedMedian(marketShareChanges.values.toList());
 
-    // final stockPriceStdDev = _calculateStandardDeviation(stockPriceChanges.values.toList());
-    // final revenueStdDev = _calculateStandardDeviation(revenueChanges.values.toList());
-    // final expenseStdDev = _calculateStandardDeviation(expenseChanges.values.toList());
-    // final marketShareStdDev = _calculateStandardDeviation(marketShareChanges.values.toList());
-
-    // Logic to comment on growth
     if (weightedMedianStockPriceChange > 10 &&
         weightedMedianRevenueChange > 10 &&
         weightedMedianMarketShareChange > 5 &&
@@ -101,24 +104,20 @@ class CompanyComputation {
   }
 
   double _calculateWeightedMedian(List<double> values) {
-    // Example weights for the last three years
-    List<double> weights = [4, 3, 2]; // Adjust weights based on relevant criteria
-    List<double> weightedValues = [];
+    List<double> weights = [4, 3, 2];
 
-    for (int i = 0; i < values.length && i < weights.length; i++) {
-      weightedValues.add(values[i] * weights[i]);
+    if (values.length < weights.length) {
+      weights = weights.take(values.length).toList();
     }
 
-    double totalWeight = weights.take(weightedValues.length).reduce((a, b) => a + b);
-    double weightedMedian = weightedValues.reduce((a, b) => a + b) / totalWeight;
+    List<double> weightedValues = [];
+    for (int i = 0; i < values.length; i++) {
+      weightedValues.add(values[i] * weights[i % weights.length]);
+    }
 
-    return weightedMedian;
-  }
-
-  double _calculateStandardDeviation(List<double> values) {
-    final mean = values.reduce((a, b) => a + b) / values.length;
-    final variance = values.map((value) => (value - mean) * (value - mean)).reduce((a, b) => a + b) / values.length;
-    return sqrt(variance);
+    double totalWeight =
+        weights.take(weightedValues.length).reduce((a, b) => a + b);
+    return weightedValues.reduce((a, b) => a + b) / totalWeight;
   }
 
   RichText _growthText(Color color, String text, VoidCallback onTap) {

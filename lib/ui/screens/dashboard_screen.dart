@@ -16,6 +16,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   String? selectedCountry;
+  final companyComputation = CompanyComputation(); 
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +100,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   Text(
                     selectedCountry != null
-                        ? CompanyComputation(companyData)
+                        ? companyComputation
                             .companiesInSameCountry(selectedCountry!)
                             .length
                             .toString()
@@ -118,12 +119,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: selectedCountry != null
-                      ? CompanyComputation(companyData)
+                      ? companyComputation
                           .companiesInSameCountry(selectedCountry!)
                           .length
                       : 0,
                   itemBuilder: (context, index) {
-                    final company = CompanyComputation(companyData)
+                    final company = companyComputation
                         .companiesInSameCountry(selectedCountry!)[index];
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),

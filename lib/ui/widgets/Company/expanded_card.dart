@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:otter/services/computation.dart';
-import 'package:otter/services/database_provider.dart';
 import 'package:otter/ui/widgets/Company/additional_widgets.dart';
 import 'package:otter/ui/widgets/Company/changes_dialog.dart';
-import 'package:provider/provider.dart';
 
 import '../../../services/company_model.dart';
 import 'stock_price_linegraph.dart';
@@ -19,6 +17,7 @@ class ExpandableCompanyCard extends StatefulWidget {
 class _ExpandableCompanyCardState extends State<ExpandableCompanyCard>
     with SingleTickerProviderStateMixin {
   bool _isExpanded = false;
+  final companyComputation = CompanyComputation();
 
   @override
   Widget build(BuildContext context) {
@@ -128,12 +127,10 @@ class _ExpandableCompanyCardState extends State<ExpandableCompanyCard>
                           child: SizedBox(
                             width: 10,
                             height: 30,
-                            child: Consumer<FireStoreProvider>(
-                                builder: (context, dbProvider, child) {
-                              final computeData =
-                                  CompanyComputation(dbProvider.companyDataList)
-                                      .greaterDiversityInSameCountry(
-                                          widget.company);
+                            child: Builder(builder: (context) {
+                              final computeData = companyComputation
+                                  .greaterDiversityInSameCountry(
+                                      widget.company);
                               return ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: computeData.length,
@@ -170,17 +167,13 @@ class _ExpandableCompanyCardState extends State<ExpandableCompanyCard>
                     const SizedBox(height: 5),
                     Graphs(company: widget.company),
                     const Divider(color: Colors.white12),
-                    Consumer<FireStoreProvider>(
-                      builder: (context, value, child) => FutureBuilder(
-                          future: CompanyComputation(value.companyDataList)
-                              .commentOnGrowth(
-                                  widget.company,
-                                  () => showBlurredDialog(
-                                      widget.company, context)),
-                          builder: (context, snapshot) {
-                            return Center(child: snapshot.data);
-                          }),
-                    )
+                    FutureBuilder(
+                        future: companyComputation.commentOnGrowth(
+                            widget.company,
+                            () => showBlurredDialog(widget.company, context)),
+                        builder: (context, snapshot) {
+                          return Center(child: snapshot.data);
+                        }),
                   ],
                 ),
                 crossFadeState: _isExpanded

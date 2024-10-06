@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:otter/constants/colors.dart';
 import 'package:otter/services/company_model.dart';
 import 'package:otter/services/computation.dart';
-import 'package:otter/services/database_provider.dart';
-import 'package:provider/provider.dart';
+
+final companyComputation = CompanyComputation();
 
 void showBlurredDialog(CompanyModel company, BuildContext context) {
   showDialog(
@@ -102,68 +102,63 @@ Widget _buildPerformanceSection(
 }
 
 Widget changedByYear(CompanyModel company, String type) {
-  return Consumer<FireStoreProvider>(
-    builder: (context, dbProvider, child) {
-      return FutureBuilder(
-        future: CompanyComputation(dbProvider.companyDataList)
-            .yearOverYearComparison(company),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return const Text('Error loading data');
-          } else if (!snapshot.hasData || (snapshot.data as Map).isEmpty) {
-            return const Text('No data available');
-          } else {
-            final data = snapshot.data as Map<String, dynamic>;
-            return SizedBox(
-              height: 50,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: data[type].keys.length,
-                itemBuilder: (context, index) {
-                  final year = data[type].keys.elementAt(index);
-                  final change = (data[type][year] ?? 0.0) as double;
-                  final isPositive = change >= 0;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+  return FutureBuilder(
+    future: companyComputation.yearOverYearComparison(company),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (snapshot.hasError) {
+        return const Text('Error loading data');
+      } else if (!snapshot.hasData || (snapshot.data as Map).isEmpty) {
+        return const Text('No data available');
+      } else {
+        final data = snapshot.data as Map<String, dynamic>;
+        return SizedBox(
+          height: 50,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: data[type].keys.length,
+            itemBuilder: (context, index) {
+              final year = data[type].keys.elementAt(index);
+              final change = (data[type][year] ?? 0.0) as double;
+              final isPositive = change >= 0;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            Text(
-                              year,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Icon(
-                              isPositive
-                                  ? Icons.arrow_drop_up
-                                  : Icons.arrow_drop_down,
-                              color: isPositive ? Colors.green : Colors.red,
-                            ),
-                          ],
-                        ),
                         Text(
-                          '${change.toStringAsFixed(2)}%', // Format percentage change
-                          style: TextStyle(
-                            color: isPositive ? Colors.green : Colors.red,
+                          year,
+                          style: const TextStyle(
+                            color: Colors.white,
                             fontSize: 12,
+                            fontWeight: FontWeight.bold,
                           ),
+                        ),
+                        Icon(
+                          isPositive
+                              ? Icons.arrow_drop_up
+                              : Icons.arrow_drop_down,
+                          color: isPositive ? Colors.green : Colors.red,
                         ),
                       ],
                     ),
-                  );
-                },
-              ),
-            );
-          }
-        },
-      );
+                    Text(
+                      '${change.toStringAsFixed(2)}%', // Format percentage change
+                      style: TextStyle(
+                        color: isPositive ? Colors.green : Colors.red,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      }
     },
   );
 }

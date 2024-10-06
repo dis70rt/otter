@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:otter/services/auth_provider.dart';
 import 'package:otter/services/database_provider.dart';
-import 'package:otter/ui/screens/watchlist_screen.dart';
 import 'package:otter/ui/widgets/appbar.dart';
 import 'package:otter/ui/widgets/Company/company_widget.dart';
 import 'package:provider/provider.dart';
@@ -36,17 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: _selectedIndex,
         children: const [
-          WatchlistScreen(),
           DashboardScreen(),
           CompanyWidget()
         ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF7373ff),
-        shape: const CircleBorder(),
-        child: const Icon(Icons.data_exploration),
-        onPressed: () => _onItemTapped(1),
       ),
       bottomNavigationBar:
           buildBottomNavigationBar(_onItemTapped, _selectedIndex),

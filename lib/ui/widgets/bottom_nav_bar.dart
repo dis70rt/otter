@@ -26,7 +26,7 @@ Widget buildBottomNavigationBar(void Function(int) onTap, int selectedIndex) {
               children: <Widget>[
                 TextButton(
                   child: Text(
-                    "WATCHLIST",
+                    "DASHBOARD",
                     style: TextStyle(
                       color: selectedIndex == 0 ? Colors.white : Colors.white60,
                     ),
@@ -37,10 +37,10 @@ Widget buildBottomNavigationBar(void Function(int) onTap, int selectedIndex) {
                   child: Text(
                     "COMPANY",
                     style: TextStyle(
-                      color: selectedIndex == 2 ? Colors.white : Colors.white60,
+                      color: selectedIndex == 1 ? Colors.white : Colors.white60,
                     ),
                   ),
-                  onPressed: () => onTap(2),
+                  onPressed: () => onTap(1),
                 ),
               ],
             ),

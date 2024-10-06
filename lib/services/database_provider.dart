@@ -11,9 +11,6 @@ class FireStoreProvider extends ChangeNotifier {
 
   final List<CompanyModel> _companyDataList = [];
   bool _isLoading = true;
-  DocumentSnapshot? _lastDocument;
-  bool _hasMoreData = true;
-  static const int _limit = 10;
 
   List<CompanyModel> get companyDataList => _companyDataList;
   bool get isLoading => _isLoading;
@@ -38,32 +35,28 @@ class FireStoreProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } else {
-      fetchCompanyData();
+      await fetchCompanyData();  // Fetch from Firestore if cache is empty
     }
   }
 
   Future<void> fetchCompanyData() async {
-    if (!_hasMoreData) return;
+    _isLoading = true; // Set loading state
+    notifyListeners(); // Notify listeners to show loading state
 
     try {
-      Query query = _companyCollection.limit(_limit);
-      if (_lastDocument != null) {
-        query = query.startAfterDocument(_lastDocument!);
-      }
+      QuerySnapshot snapshot = await _companyCollection.get(); // Fetch all data
 
-      QuerySnapshot snapshot = await query.get();
       if (snapshot.docs.isNotEmpty) {
-        _lastDocument = snapshot.docs.last;
         List<CompanyModel> newCompanies = snapshot.docs
             .map((doc) => CompanyModel.fromFirestore(doc))
             .toList();
 
+        _companyDataList.clear(); // Clear previous data
         _companyDataList.addAll(newCompanies);
         _isLoading = false;
-        _hasMoreData = newCompanies.length == _limit;
 
-        await _cacheCompanyData();
-        notifyListeners();
+        await _cacheCompanyData(); // Cache the fetched data
+        notifyListeners(); // Notify listeners with new data
       }
     } catch (e) {
       log("Error fetching company data: $e");
@@ -134,8 +127,6 @@ class FireStoreProvider extends ChangeNotifier {
 
   Future<void> refreshCompanyData() async {
     _companyDataList.clear();
-    _lastDocument = null;
-    _hasMoreData = true;
-    await fetchCompanyData();
+    await fetchCompanyData(); // Refetch company data from Firestore
   }
 }
