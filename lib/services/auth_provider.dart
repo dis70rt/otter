@@ -50,7 +50,7 @@ class AuthProvider with ChangeNotifier {
       await _auth.createUserWithEmailAndPassword(
           email: email.trim(), password: password.trim());
       _hideDialog();
-      return null; // Successful signup
+      return null;
     } on FirebaseAuthException catch (e) {
       _hideDialog();
       return _handleAuthError(e);
@@ -87,7 +87,7 @@ class AuthProvider with ChangeNotifier {
 
       await _auth.signInWithCredential(credential);
       _hideDialog();
-      return null; // Successful Google sign-in
+      return null;
     } catch (e) {
       _hideDialog();
       log('Error during Google sign-in: $e');
@@ -98,21 +98,20 @@ class AuthProvider with ChangeNotifier {
   Future<void> sendOTP(String phoneNumber, BuildContext context) async {
     try {
       log('Sending OTP to $phoneNumber');
-      // _showLoadingDialog();
+
       await _auth.verifyPhoneNumber(
         verificationCompleted: (PhoneAuthCredential credential) async {
           await _auth.signInWithCredential(credential);
           log('Verification completed, signed in.');
-          // _hideDialog();
         },
         verificationFailed: (FirebaseAuthException ex) {
           log('Verification failed: ${ex.message}');
-          // _hideDialog();
+
           throw Exception('Verification failed: ${ex.message}');
         },
         codeSent: (String verificationID, int? resendToken) {
           log('Code sent to $phoneNumber, verification ID: $verificationID');
-          // _hideDialog();
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(

@@ -10,12 +10,14 @@ Widget signupText(BuildContext context, VoidCallback toggle) {
           children: [
             const TextSpan(
               text: "Don't have an account? ",
-              style: TextStyle(color: Colors.white54, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.white54, fontWeight: FontWeight.bold),
             ),
             TextSpan(
               text: "Sign Up",
-              style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-              recognizer: TapGestureRecognizer()..onTap = toggle, // Attach the toggle function
+              style: const TextStyle(
+                  color: Colors.blue, fontWeight: FontWeight.bold),
+              recognizer: TapGestureRecognizer()..onTap = toggle,
             ),
           ],
         ),
@@ -33,12 +35,15 @@ Widget loginText(BuildContext context, VoidCallback toggle) {
           children: [
             const TextSpan(
               text: "Already have an account? ",
-              style: TextStyle(color: Colors.white54, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.white54, fontWeight: FontWeight.bold),
             ),
             TextSpan(
+              // Attach the toggle function
               text: "Log In",
-              style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-              recognizer: TapGestureRecognizer()..onTap = toggle, // Attach the toggle function
+              style: const TextStyle(
+                  color: Colors.blue, fontWeight: FontWeight.bold),
+              recognizer: TapGestureRecognizer()..onTap = toggle,
             ),
           ],
         ),
@@ -46,7 +51,6 @@ Widget loginText(BuildContext context, VoidCallback toggle) {
     ],
   );
 }
-
 
 Widget forgotText(BuildContext context, VoidCallback toggle) {
   return Row(
@@ -57,12 +61,14 @@ Widget forgotText(BuildContext context, VoidCallback toggle) {
           children: [
             const TextSpan(
               text: "Remembered your Password? ",
-              style: TextStyle(color: Colors.white54, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.white54, fontWeight: FontWeight.bold),
             ),
             TextSpan(
               text: "Log In",
-              style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-              recognizer: TapGestureRecognizer()..onTap = toggle, // Attach the toggle function
+              style: const TextStyle(
+                  color: Colors.blue, fontWeight: FontWeight.bold),
+              recognizer: TapGestureRecognizer()..onTap = toggle,
             ),
           ],
         ),

@@ -1,4 +1,3 @@
-// login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:otter/ui/widgets/Login%20Elements/forgot_password.dart';
 import 'package:otter/ui/widgets/auth_widget.dart';

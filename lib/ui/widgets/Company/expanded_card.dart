@@ -138,13 +138,10 @@ class _ExpandableCompanyCardState extends State<ExpandableCompanyCard>
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Container(
-                                      // padding: const EdgeInsets.symmetric(
-                                      //     horizontal: 2, vertical: 2),
                                       decoration: BoxDecoration(
                                         border: Border.all(
                                             color: Colors.lightBlueAccent),
                                         borderRadius: BorderRadius.circular(60),
-                                        // color: AppColors.midDarkBlue,
                                       ),
                                       child: Center(
                                         child: Text(

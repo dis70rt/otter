@@ -1,4 +1,3 @@
-// signup_screen.dart
 import 'package:flutter/material.dart';
 import 'package:otter/ui/widgets/auth_widget.dart';
 import 'package:otter/ui/widgets/Login Elements/signup_form.dart';

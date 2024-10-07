@@ -43,7 +43,7 @@ class _OTPscreenState extends State<OTPscreen> {
       if (_remainingTime > 0) {
         setState(() {
           _remainingTime--;
-          _canResendCode = _remainingTime == 0; // Update resend code status
+          _canResendCode = _remainingTime == 0;
         });
       } else {
         _timer.cancel();
@@ -95,9 +95,8 @@ class _OTPscreenState extends State<OTPscreen> {
         smsCode: otp,
       );
 
-      // Attempt to sign in with the provided credential instead of linking
       await fb_auth.FirebaseAuth.instance.signInWithCredential(authCredential);
-      // If successful, navigate to the home screen
+
       Navigator.popAndPushNamed(context, "/home");
     } on fb_auth.FirebaseAuthException catch (e) {
       log("CHECK ERROR >> ${e.toString()}");
@@ -119,7 +118,7 @@ class _OTPscreenState extends State<OTPscreen> {
       if (index < otpValues.length - 1) {
         FocusScope.of(context).requestFocus(otpFocusNodes[index + 1]);
       } else {
-        verifyOTP(); // Verify OTP if it's the last field
+        verifyOTP();
       }
     } else if (value.isEmpty && index > 0) {
       FocusScope.of(context).requestFocus(otpFocusNodes[index - 1]);
@@ -207,7 +206,7 @@ class _OTPscreenState extends State<OTPscreen> {
         ),
         if (_isLoading)
           Container(
-            color: Colors.black54, // Dull background
+            color: Colors.black54,
             child: const Center(
               child: CircularProgressIndicator(),
             ),
@@ -238,9 +237,8 @@ class _OTPscreenState extends State<OTPscreen> {
       valueListenable: valueNotifier,
       builder: (context, value, child) {
         return TextFormField(
-          // Removed initialValue to reduce unnecessary rebuilds
           onChanged: (value) {
-            valueNotifier.value = value; // Update value notifier
+            valueNotifier.value = value;
             _onOtpFieldChanged(value, index);
           },
           cursorColor: Colors.blueAccent,
@@ -262,10 +260,9 @@ class _OTPscreenState extends State<OTPscreen> {
             FilteringTextInputFormatter.digitsOnly,
           ],
           textAlign: TextAlign.center,
-          focusNode: otpFocusNodes[index], // Keep track of focus
+          focusNode: otpFocusNodes[index],
           onTap: () {
-            FocusScope.of(context).requestFocus(
-                otpFocusNodes[index]); // Ensure focus stays on the field
+            FocusScope.of(context).requestFocus(otpFocusNodes[index]);
           },
         );
       },

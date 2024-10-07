@@ -88,7 +88,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                // mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
                     "Total Companies",
@@ -113,9 +112,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 10), // Add some spacing
+              const SizedBox(height: 10),
               SizedBox(
-                height: 30, // Constrain height for ListView.builder
+                height: 30,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: selectedCountry != null

@@ -37,6 +37,18 @@ class CompanyComputation {
     };
   }
 
+  List<CompanyModel> getTopPerformingCompanies({int topCount = 3}) {
+    companyData.sort((a, b) {
+      final latestYearA = a.stockPrices.keys.last;
+      final latestYearB = b.stockPrices.keys.last;
+      final stockPriceA = a.stockPrices[latestYearA] ?? 0;
+      final stockPriceB = b.stockPrices[latestYearB] ?? 0;
+      return stockPriceB.compareTo(stockPriceA);
+    });
+
+    return companyData.take(topCount).toList();
+  }
+
   Map<String, double> _calculateYearlyChanges(Map<String, num?> data) {
     final changes = <String, double>{};
     final years = data.keys.toList()..sort();
@@ -45,11 +57,7 @@ class CompanyComputation {
       final previous = (data[years[i - 1]] ?? 0).toDouble();
       final current = (data[years[i]] ?? 0).toDouble();
 
-      if (previous != 0) {
-        changes[years[i]] = ((current - previous) / previous) * 100;
-      } else {
-        changes[years[i]] = 0;
-      }
+      changes[years[i]] = ((current - previous) / previous) * 100;
     }
 
     return changes;

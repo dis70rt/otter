@@ -7,7 +7,7 @@ String formatMarketCap(num marketCap) {
       : '${(marketCap / 1e6).toStringAsFixed(1)}M';
 }
 
-Widget lineChart(Map<String, num?> data, String label) {
+Widget lineChart(Map<String, num?> data) {
   final sortedData = _sortDataByYears(data);
   final spots = _generateLineChartSpots(sortedData);
 
@@ -23,8 +23,7 @@ Widget lineChart(Map<String, num?> data, String label) {
   final maxY = spots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b);
   final minY = spots.map((spot) => spot.y).reduce((a, b) => a < b ? a : b);
 
-  // Increase maxY by a certain percentage (e.g., 10%)
-  final adjustedMaxY = maxY * 1.1; // Adjust this value as needed
+  final adjustedMaxY = maxY * 1.1;
 
   return Padding(
     padding: const EdgeInsets.only(right: 10),
@@ -79,12 +78,11 @@ Widget lineChart(Map<String, num?> data, String label) {
                 showTitles: true,
                 reservedSize: 40,
                 getTitlesWidget: (value, meta) {
-                  // Format the left labels into millions and billions
                   return Text(
                     formatMarketCap(value),
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 8, // Reduced text size for left labels
+                      fontSize: 8,
                     ),
                   );
                 },
@@ -100,7 +98,6 @@ Widget lineChart(Map<String, num?> data, String label) {
           ),
           lineBarsData: [
             LineChartBarData(
-              // preventCurveOvershootingThreshold: 1,
               spots: spots,
               isCurved: true,
               barWidth: 3,
@@ -115,7 +112,7 @@ Widget lineChart(Map<String, num?> data, String label) {
           minX: 0,
           maxX: spots.length.toDouble() - 1,
           minY: minY,
-          maxY: adjustedMaxY, // Use the adjusted maxY
+          maxY: adjustedMaxY,
           clipData: const FlClipData.all(),
         ),
       ),

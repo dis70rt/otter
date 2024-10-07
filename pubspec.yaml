@@ -45,6 +45,7 @@ dependencies:
   fl_chart: ^0.69.0
   shared_preferences: ^2.3.2
   flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.1
 
 dev_dependencies:
   flutter_test:
@@ -73,7 +74,7 @@ flutter:
     - assets/images/apple.svg
     - assets/images/google.svg
     - assets/images/pattern.svg
-    - assets/images/launcher.jpeg
+    - assets/images/launcher.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

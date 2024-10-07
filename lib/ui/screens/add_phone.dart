@@ -46,7 +46,6 @@ class _AddPhoneState extends State<AddPhone> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     if (authProvider.user?.phoneNumber?.isNotEmpty ?? false) {
-      // Phone number already exists, send OTP directly
       authProvider.sendOTP(authProvider.user!.phoneNumber!, context);
       return const SizedBox();
     }
@@ -143,8 +142,6 @@ class _AddPhoneState extends State<AddPhone> {
                     },
                   );
 
-                  // Send OTP using the AuthProvider
-                  // await context.read<AuthProvider>().checkPhoneNumberAndSendOTP(phoneNumber, context);
                   authProvider.sendOTP(phoneNumber, context);
                   Navigator.of(context).pop();
                 }

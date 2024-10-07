@@ -1,4 +1,3 @@
-// auth_container.dart
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -34,7 +33,10 @@ class AuthWidget extends StatelessWidget {
                       gradient: const LinearGradient(
                         begin: Alignment(0, 1),
                         end: Alignment(0, 0),
-                        colors: [AppColors.primaryDarkBlue, AppColors.secondaryDarkBlue],
+                        colors: [
+                          AppColors.primaryDarkBlue,
+                          AppColors.secondaryDarkBlue
+                        ],
                       ),
                       border: const Border(
                           top: BorderSide(color: Colors.white10, width: 2)),
@@ -48,7 +50,7 @@ class AuthWidget extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const SizedBox(height: 10),
-                          child, // This will be the specific form content
+                          child,
                         ],
                       ),
                     ),

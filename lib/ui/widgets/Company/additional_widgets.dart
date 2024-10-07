@@ -12,7 +12,7 @@ class Graphs extends StatefulWidget {
 }
 
 class _GraphsState extends State<Graphs> {
-  String selectedGraph = "Expenses"; // Default selected graph
+  String selectedGraph = "Expenses";
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,7 @@ class _GraphsState extends State<Graphs> {
         data = widget.company.expenses;
     }
 
-    return lineChart(data, selectedGraph);
+    return lineChart(data);
   }
 
   Widget _graphButtons(String label, VoidCallback onTap) {

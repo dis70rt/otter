@@ -146,7 +146,7 @@ Widget changedByYear(CompanyModel company, String type) {
                       ],
                     ),
                     Text(
-                      '${change.toStringAsFixed(2)}%', // Format percentage change
+                      '${change.toStringAsFixed(2)}%',
                       style: TextStyle(
                         color: isPositive ? Colors.green : Colors.red,
                         fontSize: 12,
