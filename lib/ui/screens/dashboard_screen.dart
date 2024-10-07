@@ -1,11 +1,12 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:otter/constants/colors.dart';
+import 'package:otter/services/company_model.dart';
 import 'package:otter/services/computation.dart';
-import 'package:otter/services/database_provider.dart';
-import 'package:provider/provider.dart';
-
-import '../../constants/lists.dart';
+import 'package:otter/ui/widgets/Dashboard/bar_graph.dart';
+import 'package:otter/ui/widgets/Dashboard/country_widget.dart';
+import 'package:otter/ui/widgets/Dashboard/infinite_scroll.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -15,200 +16,128 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  String? selectedCountry;
-  final companyComputation = CompanyComputation();
+  final computation = CompanyComputation();
+  ValueNotifier<CompanyModel?> selectedCompany =
+      ValueNotifier<CompanyModel?>(null);
+  List<CompanyModel>? companies;
+  int currentIndex = 0;
+  Timer? timer;
+
+  @override
+  void initState() {
+    super.initState();
+    timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (companies != null && companies!.isNotEmpty) {
+        selectedCompany.value = companies![currentIndex];
+        currentIndex = (currentIndex + 1) %
+            (companies!.length > 3 ? 3 : companies!.length);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    selectedCompany.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Consumer<FireStoreProvider>(
-        builder: (context, dbProvider, child) => Column(
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
-          children: [buildCard(dbProvider.companyDataList)],
-        ),
-      ),
-    );
-  }
+          children: [
+            const CountryCardWidget(),
+            const SizedBox(height: 8),
+            const Divider(color: Colors.white12),
+            const Text(
+              "Top Performing Companies",
+              style: TextStyle(
+                  color: AppColors.midBlue,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 5),
+            FutureBuilder<List<CompanyModel>>(
+              future: computation.getTopPerformingCompanies(topCount: 5),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return const Center(child: Text("Error loading data"));
+                } else if (snapshot.hasData) {
+                  companies = snapshot.data!;
 
-  Widget buildCard(companyData) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.secondaryDarkBlue, width: 2),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "Total Companies in Country",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              GestureDetector(
-                onTap: _showCountryPicker,
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 35,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: const Color(0xFF7373ff)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        selectedCountry ?? "Select Country",
-                        softWrap: true,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.15,
-                          color: Color(0xFF111184),
+                      Wrap(
+                        spacing: 10,
+                        children: List.generate(
+                          companies!.length > 3 ? 3 : companies!.length,
+                          (index) {
+                            return ValueListenableBuilder<CompanyModel?>(
+                              valueListenable: selectedCompany,
+                              builder: (context, selected, child) {
+                                return Chip(
+                                  side: const BorderSide(color: Colors.black),
+                                  shape: const StadiumBorder(),
+                                  label: Text(
+                                    companies![index].company,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: selected == companies![index]
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                  backgroundColor: selected == companies![index]
+                                      ? AppColors.secondaryDarkBlue
+                                      : AppColors.midBlue,
+                                );
+                              },
+                            );
+                          },
                         ),
                       ),
-                      const Icon(
-                        Icons.arrow_drop_down,
-                        color: Color(0xFF111184),
+                      const SizedBox(height: 20),
+                      ValueListenableBuilder<CompanyModel?>(
+                        valueListenable: selectedCompany,
+                        builder: (context, selected, child) {
+                          if (selected != null) {
+                            return SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              height: 200,
+                              child: barChart(selected.stockPrices),
+                            );
+                          } else {
+                            return Container();
+                          }
+                        },
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Total Companies",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white54,
-                    ),
-                  ),
-                  Text(
-                    selectedCountry != null
-                        ? companyComputation
-                            .companiesInSameCountry(selectedCountry!)
-                            .length
-                            .toString()
-                        : "0",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 30,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: selectedCountry != null
-                      ? companyComputation
-                          .companiesInSameCountry(selectedCountry!)
-                          .length
-                      : 0,
-                  itemBuilder: (context, index) {
-                    final company = companyComputation
-                        .companiesInSameCountry(selectedCountry!)[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 2),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(60),
-                            color: AppColors.midDarkBlue),
-                        child: Center(
+                      const Center(
                           child: Text(
-                            company.company,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
+                        "Stock Price",
+                        style: TextStyle(fontSize: 10),
+                      )),
+                      const Divider(color: Colors.white10),
+                      const InfiniteScroll(),
+                    ],
+                  );
+                } else {
+                  return const Center(child: Text("No data available"));
+                }
+              },
+            ),
+          ],
         ),
       ),
-    );
-  }
-
-  void _showCountryPicker() {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25),
-            color: AppColors.primaryDarkBlue,
-          ),
-          height: 250,
-          child: Column(
-            children: [
-              Material(
-                type: MaterialType.transparency,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: const Text(
-                    "Select a Country",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: CupertinoPicker(
-                  backgroundColor: AppColors.primaryDarkBlue,
-                  scrollController: FixedExtentScrollController(
-                    initialItem: selectedCountry != null
-                        ? countries.indexOf(selectedCountry!)
-                        : 0,
-                  ),
-                  itemExtent: 32.0,
-                  onSelectedItemChanged: (int index) {
-                    setState(() {
-                      selectedCountry = countries[index];
-                    });
-                  },
-                  children:
-                      List<Widget>.generate(countries.length, (int index) {
-                    return Center(
-                      child: Text(
-                        countries[index],
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }

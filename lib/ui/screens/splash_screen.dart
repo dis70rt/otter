@@ -76,7 +76,7 @@ class _SplashScreenState extends State<SplashScreen>
             child: child,
           );
         },
-        transitionDuration: const Duration(milliseconds: 1500),
+        transitionDuration: const Duration(milliseconds: 500),
       ),
     );
   }

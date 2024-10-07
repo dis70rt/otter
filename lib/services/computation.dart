@@ -37,7 +37,8 @@ class CompanyComputation {
     };
   }
 
-  List<CompanyModel> getTopPerformingCompanies({int topCount = 3}) {
+  Future<List<CompanyModel>> getTopPerformingCompanies(
+      {int topCount = 3}) async {
     companyData.sort((a, b) {
       final latestYearA = a.stockPrices.keys.last;
       final latestYearB = b.stockPrices.keys.last;
@@ -46,7 +47,26 @@ class CompanyComputation {
       return stockPriceB.compareTo(stockPriceA);
     });
 
-    return companyData.take(topCount).toList();
+    List<CompanyModel> topCompanies = companyData.take(topCount).toList();
+
+    List<CompanyModel> topPerformers = [];
+
+    for (var company in topCompanies) {
+      final stockPriceChanges = _calculateYearlyChanges(company.stockPrices);
+      final revenueChanges = _calculateYearlyChanges(company.revenue);
+
+      final weightedMedianStockPriceChange =
+          _calculateWeightedMedian(stockPriceChanges.values.toList());
+      final weightedMedianRevenueChange =
+          _calculateWeightedMedian(revenueChanges.values.toList());
+
+      if (weightedMedianStockPriceChange > 10 &&
+          weightedMedianRevenueChange > 10) {
+        topPerformers.add(company);
+      }
+    }
+
+    return topPerformers;
   }
 
   Map<String, double> _calculateYearlyChanges(Map<String, num?> data) {

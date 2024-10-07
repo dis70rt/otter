@@ -193,3 +193,12 @@ List<String> countries = [
   "Zambia",
   "Zimbabwe",
 ];
+
+final List<String> quotes = [
+  "\"The stock market is a device for transferring money from the impatient to the patient.\" - Warren Buffett",
+  "\"In investing, what is comfortable is rarely profitable.\" - Robert Arnott",
+  "\"The stock market is designed to transfer money from the Active to the Patient.\" - Warren Buffett",
+  "\"In this business, if you're good, you're right six times out of ten.\" - Peter Lynch",
+  "\"The first recorded stock market began in Amsterdam in 1602 with the Dutch East India Company!\""
+];
+

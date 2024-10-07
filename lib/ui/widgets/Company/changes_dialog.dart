@@ -63,11 +63,20 @@ void showBlurredDialog(CompanyModel company, BuildContext context) {
                           company, 'Market Share', 'marketShare'),
                       _buildPerformanceSection(company, 'Expenses', 'expenses'),
                       const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Close'),
+                      Center(
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                              backgroundColor: const WidgetStatePropertyAll(
+                                  AppColors.secondaryDarkBlue),
+                              shape: WidgetStatePropertyAll(
+                                  RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(12)))),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Close'),
+                        ),
                       ),
                     ],
                   ),
