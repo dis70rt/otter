@@ -1,33 +1,38 @@
-import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:otter/services/database_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'company_model.dart';
+import 'database_provider.dart';
 
 class CompanyComputation {
-  final FireStoreProvider fireStoreProvider = FireStoreProvider();
-  late final List<CompanyModel> companyData;
+  static final FireStoreProvider fireStoreProvider = FireStoreProvider();
+  static late List<CompanyModel> companyData;
 
-  CompanyComputation() {
+  CompanyComputation._();
+
+  static Future<void> initialize() async {
+    await fireStoreProvider.initialize();
     companyData = fireStoreProvider.companyDataList;
   }
 
-  List<CompanyModel> companiesInSameCountry(String country) {
+  static List<CompanyModel> companiesInSameCountry(String country) {
     return companyData
         .where((c) => c.country.toLowerCase() == country.toLowerCase())
         .toList();
   }
 
-  List<CompanyModel> greaterDiversityInSameCountry(CompanyModel company) {
+  static List<CompanyModel> greaterDiversityInSameCountry(
+      CompanyModel company) {
     return companyData
         .where((c) =>
             c.country == company.country && c.diversity > company.diversity)
         .toList();
   }
 
-  Future<Map<String, dynamic>> yearOverYearComparison(
+  static Future<Map<String, dynamic>> yearOverYearComparison(
       CompanyModel company) async {
     return {
       'stockPrice': _calculateYearlyChanges(company.stockPrices),
@@ -37,7 +42,7 @@ class CompanyComputation {
     };
   }
 
-  Future<List<CompanyModel>> getTopPerformingCompanies(
+  static Future<List<CompanyModel>> getTopPerformingCompanies(
       {int topCount = 3}) async {
     companyData.sort((a, b) {
       final latestYearA = a.stockPrices.keys.last;
@@ -48,7 +53,6 @@ class CompanyComputation {
     });
 
     List<CompanyModel> topCompanies = companyData.take(topCount).toList();
-
     List<CompanyModel> topPerformers = [];
 
     for (var company in topCompanies) {
@@ -69,7 +73,7 @@ class CompanyComputation {
     return topPerformers;
   }
 
-  Map<String, double> _calculateYearlyChanges(Map<String, num?> data) {
+  static Map<String, double> _calculateYearlyChanges(Map<String, num?> data) {
     final changes = <String, double>{};
     final years = data.keys.toList()..sort();
 
@@ -83,7 +87,7 @@ class CompanyComputation {
     return changes;
   }
 
-  Future<Widget> commentOnGrowth(
+  static Future<Widget> commentOnGrowth(
       CompanyModel company, VoidCallback onTap) async {
     final stockPriceChanges = _calculateYearlyChanges(company.stockPrices);
     final revenueChanges = _calculateYearlyChanges(company.revenue);
@@ -131,7 +135,7 @@ class CompanyComputation {
     }
   }
 
-  double _calculateWeightedMedian(List<double> values) {
+  static double _calculateWeightedMedian(List<double> values) {
     List<double> weights = [4, 3, 2];
 
     if (values.length < weights.length) {
@@ -148,7 +152,7 @@ class CompanyComputation {
     return weightedValues.reduce((a, b) => a + b) / totalWeight;
   }
 
-  RichText _growthText(Color color, String text, VoidCallback onTap) {
+  static RichText _growthText(Color color, String text, VoidCallback onTap) {
     return RichText(
       text: TextSpan(
         children: [
@@ -163,13 +167,13 @@ class CompanyComputation {
     );
   }
 
-  Future<void> cacheComputationResults(
+  static Future<void> cacheComputationResults(
       String companyId, Map<String, dynamic> results) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('cached_computation_$companyId', jsonEncode(results));
   }
 
-  Future<Map<String, dynamic>?> getCachedComputationResults(
+  static Future<Map<String, dynamic>?> getCachedComputationResults(
       String companyId) async {
     final prefs = await SharedPreferences.getInstance();
     final cachedData = prefs.getString('cached_computation_$companyId');

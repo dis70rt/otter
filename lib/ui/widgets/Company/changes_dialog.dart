@@ -4,8 +4,6 @@ import 'package:otter/constants/colors.dart';
 import 'package:otter/services/company_model.dart';
 import 'package:otter/services/computation.dart';
 
-final companyComputation = CompanyComputation();
-
 void showBlurredDialog(CompanyModel company, BuildContext context) {
   showDialog(
     context: context,
@@ -112,7 +110,7 @@ Widget _buildPerformanceSection(
 
 Widget changedByYear(CompanyModel company, String type) {
   return FutureBuilder(
-    future: companyComputation.yearOverYearComparison(company),
+    future: CompanyComputation.yearOverYearComparison(company),
     builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
         return const Center(child: CircularProgressIndicator());

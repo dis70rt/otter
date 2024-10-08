@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:otter/constants/colors.dart';
 import 'package:otter/constants/lists.dart';
 import 'package:otter/main.dart';
@@ -28,10 +28,17 @@ class _InitializeScreenState extends State<InitializeScreen>
   @override
   void initState() {
     super.initState();
+
     _alignment =
         Alignment(_random.nextDouble() * 2 - 1, _random.nextDouble() * 2 - 1);
 
-    // Initialize shared preferences
+    _controller =
+        AnimationController(duration: const Duration(minutes: 2), vsync: this)
+          ..addListener(_updateGradientPosition);
+
+    _progressAnimation = Tween<double>(begin: 0.0, end: 1.0)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.linear));
+
     _checkFirstLaunch();
   }
 
@@ -40,20 +47,12 @@ class _InitializeScreenState extends State<InitializeScreen>
     bool isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
 
     if (isFirstLaunch) {
-      // Set first launch flag to false
       await prefs.setBool('isFirstLaunch', false);
-      _controller =
-          AnimationController(duration: const Duration(minutes: 2), vsync: this)
-            ..addListener(_updateGradientPosition);
       _controller.forward().then((_) => _navigateToAuthPage());
     } else {
-      // Wait for 5 seconds
-      await Future.delayed(const Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 1));
       _navigateToAuthPage();
     }
-
-    _progressAnimation = Tween<double>(begin: 0.0, end: 1.0)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.linear));
   }
 
   @override

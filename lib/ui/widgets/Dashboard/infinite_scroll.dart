@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:otter/services/company_model.dart';
 import 'package:otter/services/computation.dart';
@@ -14,39 +13,33 @@ class InfiniteScroll extends StatefulWidget {
 }
 
 class _InfiniteScrollState extends State<InfiniteScroll> {
-  final companies = CompanyComputation();
   final ScrollController scroll = ScrollController();
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    // Start the automatic scrolling timer
+
     _startAutoScroll();
   }
 
   @override
   void dispose() {
-    // Dispose the scroll controller and the timer
     scroll.dispose();
     _timer?.cancel();
     super.dispose();
   }
 
   void _startAutoScroll() {
-    // Set a periodic timer to scroll the ListView
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
       if (scroll.hasClients) {
-        // Scroll the ListView a small amount to the right
         scroll.animateTo(
-          scroll.offset + 10, // Scroll by 100 pixels
+          scroll.offset + 10,
           duration: const Duration(milliseconds: 200),
           curve: Curves.linear,
         );
 
-        // Check if the end of the list is reached
         if (scroll.offset >= scroll.position.maxScrollExtent) {
-          // Reset the scroll position to the start
           scroll.jumpTo(scroll.position.minScrollExtent);
         }
       }
@@ -67,7 +60,7 @@ class _InfiniteScrollState extends State<InfiniteScroll> {
             itemBuilder: (context, index) {
               CompanyModel company = dbProvider.companyDataList[index];
               return FutureBuilder(
-                future: companies.yearOverYearComparison(company),
+                future: CompanyComputation.yearOverYearComparison(company),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const SizedBox(
@@ -79,7 +72,8 @@ class _InfiniteScrollState extends State<InfiniteScroll> {
                       width: 100,
                       child: Center(child: Text('Error loading data')),
                     );
-                  } else if (!snapshot.hasData || (snapshot.data as Map).isEmpty) {
+                  } else if (!snapshot.hasData ||
+                      (snapshot.data as Map).isEmpty) {
                     return const SizedBox(
                       width: 100,
                       child: Center(child: Text('No data available')),
@@ -87,7 +81,8 @@ class _InfiniteScrollState extends State<InfiniteScroll> {
                   } else {
                     final data = snapshot.data as Map<String, dynamic>;
                     final cmp = company.company;
-                    final change = (data['stockPrice']['2024'] ?? data['stockPrice']['2023']) as double;
+                    final change = (data['stockPrice']['2024'] ??
+                        data['stockPrice']['2023']) as double;
                     final isPositive = change >= 0;
 
                     return Padding(
@@ -108,7 +103,9 @@ class _InfiniteScrollState extends State<InfiniteScroll> {
                                 ),
                               ),
                               Icon(
-                                isPositive ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                                isPositive
+                                    ? Icons.arrow_drop_up
+                                    : Icons.arrow_drop_down,
                                 color: isPositive ? Colors.green : Colors.red,
                               ),
                             ],

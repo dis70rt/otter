@@ -46,7 +46,7 @@ Widget barChart(Map<String, num?> data) {
                     key,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 10, // Slightly larger font for better visibility
+                      fontSize: 10, 
                     ),
                   );
                 }
@@ -66,7 +66,7 @@ Widget barChart(Map<String, num?> data) {
                   formatMarketCap(value),
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 10, // Slightly larger font for better visibility
+                    fontSize: 10, 
                   ),
                 );
               },
@@ -100,11 +100,11 @@ List<BarChartGroupData> _generateBarChartGroups(Map<String, num?> stockPrices) {
         BarChartRodData(
           toY: stockPrice.toDouble(),
           color: AppColors.secondaryDarkBlue,
-          width: 27, // Reduced width for closer bars
-          borderRadius: BorderRadius.circular(2), // Rounded corners for bars
+          width: 27, 
+          borderRadius: BorderRadius.circular(2), 
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
-            // toY: maxY, // Background color for better visibility
+            
             color: Colors.blueGrey.withOpacity(0.3),
           ),
         ),

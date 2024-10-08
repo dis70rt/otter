@@ -17,7 +17,6 @@ class ExpandableCompanyCard extends StatefulWidget {
 class _ExpandableCompanyCardState extends State<ExpandableCompanyCard>
     with SingleTickerProviderStateMixin {
   bool _isExpanded = false;
-  final companyComputation = CompanyComputation();
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +127,7 @@ class _ExpandableCompanyCardState extends State<ExpandableCompanyCard>
                             width: 10,
                             height: 30,
                             child: Builder(builder: (context) {
-                              final computeData = companyComputation
+                              final computeData = CompanyComputation
                                   .greaterDiversityInSameCountry(
                                       widget.company);
                               return ListView.builder(
@@ -165,7 +164,7 @@ class _ExpandableCompanyCardState extends State<ExpandableCompanyCard>
                     Graphs(company: widget.company),
                     const Divider(color: Colors.white12),
                     FutureBuilder(
-                        future: companyComputation.commentOnGrowth(
+                        future: CompanyComputation.commentOnGrowth(
                             widget.company,
                             () => showBlurredDialog(widget.company, context)),
                         builder: (context, snapshot) {

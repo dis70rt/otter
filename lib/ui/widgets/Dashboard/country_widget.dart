@@ -16,7 +16,6 @@ class CountryCardWidget extends StatefulWidget {
 
 class _CountryCardWidgetState extends State<CountryCardWidget> {
   String? selectedCountry;
-  final companyComputation = CompanyComputation();
 
   @override
   Widget build(BuildContext context) {
@@ -84,8 +83,8 @@ class _CountryCardWidgetState extends State<CountryCardWidget> {
                 ),
                 Text(
                   selectedCountry != null
-                      ? companyComputation
-                          .companiesInSameCountry(selectedCountry!)
+                      ? CompanyComputation.companiesInSameCountry(
+                              selectedCountry!)
                           .length
                           .toString()
                       : "0",
@@ -103,13 +102,13 @@ class _CountryCardWidgetState extends State<CountryCardWidget> {
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: selectedCountry != null
-                    ? companyComputation
-                        .companiesInSameCountry(selectedCountry!)
+                    ? CompanyComputation.companiesInSameCountry(
+                            selectedCountry!)
                         .length
                     : 0,
                 itemBuilder: (context, index) {
-                  final company = companyComputation
-                      .companiesInSameCountry(selectedCountry!)[index];
+                  final company = CompanyComputation.companiesInSameCountry(
+                      selectedCountry!)[index];
                   return Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Container(
@@ -167,7 +166,6 @@ class _CountryCardWidgetState extends State<CountryCardWidget> {
                   ),
                   Expanded(
                     child: CupertinoPicker(
-                      // backgroundColor: AppColors.primaryDarkBlue,
                       scrollController: FixedExtentScrollController(
                         initialItem: selectedCountry != null
                             ? countries.indexOf(selectedCountry!)

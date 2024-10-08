@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:otter/ui/screens/add_phone.dart';
 import 'package:otter/ui/screens/auth_screen.dart';
-import 'package:otter/ui/screens/home_screen.dart';
 import 'package:otter/ui/screens/initialize_screen.dart';
 import 'package:otter/ui/widgets/verify_email.dart';
 import 'package:provider/provider.dart';
@@ -17,11 +16,12 @@ class AuthPage extends StatelessWidget {
       if (authProvider.user == null) {
         return const AuthScreen();
       } else if (authProvider.isEmailVerified) {
-        if (authProvider.user?.phoneNumber != null) {
-          return const InitializeScreen();
-        } else {
-          return const AddPhone();
-        }
+        // if (authProvider.user?.phoneNumber != null) {
+        //   return const InitializeScreen();
+        // } else {
+        //   return const AddPhone();
+        // }
+        return const AddPhone();
       } else {
         return const VerifyEmail();
       }

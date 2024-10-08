@@ -19,6 +19,10 @@ class FireStoreProvider extends ChangeNotifier {
   List<String> get searchHistory => _searchHistory;
 
   FireStoreProvider() {
+    initialize();
+  }
+
+  Future<void> initialize() async {
     _loadCachedCompanyData();
     _loadSearchHistory();
   }

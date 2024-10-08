@@ -39,7 +39,6 @@ Widget loginText(BuildContext context, VoidCallback toggle) {
                   TextStyle(color: Colors.white54, fontWeight: FontWeight.bold),
             ),
             TextSpan(
-              // Attach the toggle function
               text: "Log In",
               style: const TextStyle(
                   color: Colors.blue, fontWeight: FontWeight.bold),

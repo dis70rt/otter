@@ -101,7 +101,7 @@ class AuthProvider with ChangeNotifier {
 
       await _auth.verifyPhoneNumber(
         verificationCompleted: (PhoneAuthCredential credential) async {
-          await _auth.signInWithCredential(credential);
+          // await _auth.signInWithCredential(credential);
           log('Verification completed, signed in.');
         },
         verificationFailed: (FirebaseAuthException ex) {

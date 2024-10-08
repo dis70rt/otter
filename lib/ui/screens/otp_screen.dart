@@ -94,18 +94,21 @@ class _OTPscreenState extends State<OTPscreen> {
         verificationId: widget.verificationID,
         smsCode: otp,
       );
+      log(authCredential.toString());
+      try {
+  await authProvider.user?.linkWithCredential(authCredential);
+} on Exception catch (e) {
+  log(e.toString());
+}     await fb_auth.FirebaseAuth.instance.signInWithCredential(authCredential);
+      log(fb_auth.FirebaseAuth.instance.currentUser.toString());
+      Navigator.popAndPushNamed(context, "/init");
 
-      await fb_auth.FirebaseAuth.instance.signInWithCredential(authCredential);
-
-      Navigator.popAndPushNamed(context, "/home");
     } on fb_auth.FirebaseAuthException catch (e) {
-      log("CHECK ERROR >> ${e.toString()}");
       setState(() {
         _isLoading = false;
         _errorMessage = e.message ?? "Invalid OTP. Please try again.";
       });
     } catch (e) {
-      log("CHECK ERROR >> ${e.toString()}");
       setState(() {
         _isLoading = false;
         _errorMessage = "An error occurred. Please try again.";
