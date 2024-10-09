@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:otter/services/auth_provider.dart';
 import 'package:otter/services/database_provider.dart';
+import 'package:otter/ui/screens/settings_screen.dart';
 import 'package:otter/ui/widgets/appbar.dart';
 import 'package:otter/ui/widgets/Company/company_widget.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: buildAppbar(authProvider, context, dbProvider, _selectedIndex),
       body: IndexedStack(
         index: _selectedIndex,
-        children: const [DashboardScreen(), CompanyWidget()],
+        children: const [DashboardScreen(), CompanyWidget(), SettingsScreen()],
       ),
       bottomNavigationBar:
           buildBottomNavigationBar(_onItemTapped, _selectedIndex),

@@ -50,8 +50,8 @@ class _InitializeScreenState extends State<InitializeScreen>
       await prefs.setBool('isFirstLaunch', false);
       _controller.forward().then((_) => _navigateToAuthPage());
     } else {
-      await Future.delayed(const Duration(seconds: 1));
-      _navigateToAuthPage();
+      _controller.duration = const Duration(seconds: 5);
+      _controller.forward().then((_) => _navigateToAuthPage());
     }
   }
 
@@ -116,6 +116,7 @@ class _InitializeScreenState extends State<InitializeScreen>
                     return CircularProgressIndicator(
                       value: _progressAnimation.value,
                       strokeWidth: 6,
+                      strokeCap: StrokeCap.round,
                       backgroundColor: Colors.white.withOpacity(0.3),
                     );
                   },
