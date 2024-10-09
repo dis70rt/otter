@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 import '../ui/screens/otp_screen.dart';
 
@@ -9,10 +10,12 @@ class AuthProvider with ChangeNotifier {
   User? _user;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  bool _isOtpVerified = false;
 
   AuthProvider() {
     _auth.userChanges().listen((User? user) {
       _user = user;
+      _loadPrefsStatus();
       notifyListeners();
     });
   }
@@ -20,6 +23,13 @@ class AuthProvider with ChangeNotifier {
   User? get user => _user;
   bool get isLoggedIn => _user != null;
   bool get isEmailVerified => _user?.emailVerified ?? false;
+  bool get isOtpVerified => _isOtpVerified;
+
+  Future<void> _loadPrefsStatus() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    _isOtpVerified = prefs.getBool("otpVerified") ?? false;
+    notifyListeners();
+  }
 
   Future<String?> login(
       String email, String password, BuildContext context) async {
@@ -64,6 +74,8 @@ class AuthProvider with ChangeNotifier {
   Future<void> logout(BuildContext context) async {
     _auth.signOut();
     _user = null;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool("otpVerified", false);
     notifyListeners();
     Navigator.popAndPushNamed(context, "/auth");
   }

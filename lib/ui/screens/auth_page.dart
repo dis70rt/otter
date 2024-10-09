@@ -16,12 +16,15 @@ class AuthPage extends StatelessWidget {
       if (authProvider.user == null) {
         return const AuthScreen();
       } else if (authProvider.isEmailVerified) {
-        // if (authProvider.user?.phoneNumber != null) {
-        //   return const InitializeScreen();
-        // } else {
-        //   return const AddPhone();
-        // }
-        return const AddPhone();
+        if (authProvider.user?.phoneNumber != null) {
+          if (authProvider.isOtpVerified) {
+            return const InitializeScreen();
+          } else {
+            return const AddPhone();
+          }
+        } else {
+          return const AddPhone();
+        }
       } else {
         return const VerifyEmail();
       }

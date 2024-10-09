@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:otter/ui/widgets/auth_widget.dart';
 import 'package:otter/ui/widgets/otp_buttons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/auth_provider.dart';
 
 class OTPscreen extends StatefulWidget {
@@ -96,13 +97,15 @@ class _OTPscreenState extends State<OTPscreen> {
       );
       log(authCredential.toString());
       try {
-  await authProvider.user?.linkWithCredential(authCredential);
-} on Exception catch (e) {
-  log(e.toString());
-}     await fb_auth.FirebaseAuth.instance.signInWithCredential(authCredential);
+        await authProvider.user?.linkWithCredential(authCredential);
+      } on Exception catch (e) {
+        log(e.toString());
+      }
+      await fb_auth.FirebaseAuth.instance.signInWithCredential(authCredential);
       log(fb_auth.FirebaseAuth.instance.currentUser.toString());
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool("otpVerified", true);
       Navigator.popAndPushNamed(context, "/init");
-
     } on fb_auth.FirebaseAuthException catch (e) {
       setState(() {
         _isLoading = false;

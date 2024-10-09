@@ -14,7 +14,6 @@ class CompanyComputation {
   CompanyComputation._();
 
   static Future<void> initialize() async {
-    await fireStoreProvider.initialize();
     companyData = fireStoreProvider.companyDataList;
   }
 
